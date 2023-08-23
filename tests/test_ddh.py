@@ -1,5 +1,5 @@
 import unittest
-from src.funcenc.ddh import FeDDH
+from src.mife.ddh import FeDDH
 
 
 class TestFeDDH(unittest.TestCase):

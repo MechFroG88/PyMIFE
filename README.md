@@ -1,3 +1,3 @@
-# Funcenc
+# PyMIFE
 
-Functional encryption library for python
+Multi input functional encryption library for python

@@ -2,7 +2,7 @@ from secrets import randbits, randbelow
 from Crypto.Util.number import getStrongPrime, inverse
 from typing import List, Tuple
 
-from src.funcenc.common import inner_product, discrete_log_bound
+from src.mife.common import inner_product, discrete_log_bound
 
 
 class _FeDDH_MK:
