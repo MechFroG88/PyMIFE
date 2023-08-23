@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "funcenc"
+version = "0.0.1"
+authors = [
+  { name="mechfrog88", email="kelzzin2@gmail.com" },
+]
+dependencies = [
+    'pycryptodome >= 3.18.0',
+    'sympy >= 1.12'
+]
+description = "Python Functional Encryption Library"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
