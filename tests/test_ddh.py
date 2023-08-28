@@ -2,7 +2,7 @@ import unittest
 from src.mife.ddh import FeDDH
 
 
-class TestFeDDH(unittest.TestCase):
+class TestFeDamgardMulti(unittest.TestCase):
     def test_generate(self):
         n = 10
         bits = 1024
@@ -33,7 +33,7 @@ class TestFeDDH(unittest.TestCase):
         sk = FeDDH.keygen(y, key)
         m = FeDDH.decrypt(c, key, sk, (0, 1000))
         expected = sum([a * b for a, b in zip(x, y)])
-        self.assertEqual(m, expected)
+        self.assertEqual(expected, m)
 
     def test_scheme_2(self):
         n = 20
@@ -45,5 +45,5 @@ class TestFeDDH(unittest.TestCase):
         sk = FeDDH.keygen(y, key)
         m = FeDDH.decrypt(c, key, sk, (-100000, 100000))
         expected = sum([a * b for a, b in zip(x, y)]) % (key.p-1)
-        self.assertEqual(m, expected)
+        self.assertEqual(expected, m)
 

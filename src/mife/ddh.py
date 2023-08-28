@@ -4,6 +4,7 @@ from typing import List, Tuple
 
 from src.mife.common import inner_product, discrete_log_bound
 
+# https://eprint.iacr.org/2015/017.pdf
 
 class _FeDDH_MK:
     def __init__(self, g: int, n: int, p: int, **kwargs):
@@ -57,7 +58,7 @@ class FeDDH:
     @staticmethod
     def keygen(y: List[int], key: _FeDDH_MK) -> _FeDDH_SK:
         if len(y) != key.n:
-            raise Exception("Key vector must be of length n")
+            raise Exception(f"Function vector must be of length {key.n}")
         if not key.has_private_key():
             raise Exception("Private key not found in master key")
         sk = inner_product(key.msk, y)

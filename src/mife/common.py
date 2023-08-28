@@ -15,4 +15,8 @@ def discrete_log_bound(p, a, g, bounds):
         if cul == a:
             return (i + bounds[0]) % (p - 1)
         cul = (cul * g) % p
-    return None
+    raise Exception(f"Discrete log for {a} under base {g} not found in bounds ({bounds[0]}, {bounds[1]})")
+
+
+def to_group(p, g):
+    return lambda x: pow(g, int(x), p)
