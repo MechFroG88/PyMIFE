@@ -30,16 +30,17 @@ class TestFeDamgardMulti(TestBase):
 
     def test_scheme_2(self):
         start = time.time()
-        n = 10
-        m = 5
+        n = 50
+        m = 50
         bits = 512
         x = [[i * 10 + j for j in range(m)] for i in range(n)]
         y = [[i - j - 5 for j in range(m)] for i in range(n)]
         key = FeDamgardMulti.generate(n, m, bits)
         cs = [FeDamgardMulti.encrypt(x[i], i, key) for i in range(n)]
         sk = FeDamgardMulti.keygen(y, key)
-        m = FeDamgardMulti.decrypt(cs, key, sk, (-100000, 100000))
+        m = FeDamgardMulti.decrypt(cs, key, sk, (-10000000, 10000000))
         end = time.time()
+
         logging.info(f'FeDDHMulti test scheme 2 performance: {end - start}s')
 
         expected = 0
@@ -47,4 +48,24 @@ class TestFeDamgardMulti(TestBase):
             expected += sum([a * b for a, b in zip(x[i], y[i])])
 
         self.assertEqual(expected, m)
+
+    def test_scheme_3(self):
+        start = time.time()
+        n = 200
+        m = 200
+        bits = 512
+        x = [[1 for j in range(m)] for i in range(n)]
+        y = [[1 for j in range(m)] for i in range(n)]
+        key = FeDamgardMulti.generate(n, m, bits)
+        cs = [FeDamgardMulti.encrypt(x[i], i, key) for i in range(n)]
+        sk = FeDamgardMulti.keygen(y, key)
+        end = time.time()
+
+        logging.info(f'FeDDHMulti test scheme 3 performance: {end - start}s')
+
+        # expected = 0
+        # for i in range(n):
+        #     expected += sum([a * b for a, b in zip(x[i], y[i])])
+        #
+        # self.assertEqual(expected, m)
 

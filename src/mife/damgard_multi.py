@@ -1,9 +1,9 @@
 from secrets import randbits, randbelow
 from Crypto.Util.number import getStrongPrime, inverse
 from typing import List, Tuple
-from sympy import Matrix, matrix_multiply_elementwise
 
-from src.mife.common import inner_product, discrete_log_bound, to_group
+from src.mife.data.matrix import Matrix
+from src.mife.common import pow, discrete_log_bound, to_group
 
 # https://eprint.iacr.org/2017/972.pdf
 
@@ -59,8 +59,8 @@ class FeDamgardMulti:
 
         msk = _FeDamgardMulti_MSK(W, u)
         mpk = _FeDamgardMulti_MPK(
-            a_v.applyfunc(to_group(p, g)),
-            (W * a_v).applyfunc(to_group(p, g))
+            a_v.apply_func(to_group(p, g), p),
+            (W * a_v.T).apply_func(to_group(p, g), p)
         )
 
         return _FeDamgardMulti_MK(g, n, m, p, msk=msk, mpk=mpk)
@@ -75,12 +75,10 @@ class FeDamgardMulti:
         x = Matrix(x)
         r = randbelow(key.p)
 
-        t = key.mpk.a.applyfunc(lambda g: pow(g, r, key.p))
+        t = key.mpk.a ** r
 
-        c = matrix_multiply_elementwise(
-            (x + key.msk.u.row(i).T).applyfunc(key.to_group),
-            key.mpk.wa.applyfunc(lambda g: pow(g, r, key.p))
-        )
+        c = (x + key.msk.u.row(i)).apply_func(key.to_group, key.p)
+        c = c.point_mul((key.mpk.wa ** r).T)
 
         return _FeDamgardMulti_C(t, c, i)
 
@@ -94,10 +92,12 @@ class FeDamgardMulti:
             # [y_i dot c_i]
             yc = 1
             for j in range(key.m):
-                yc = (yc * pow(c[i].c[j], sk.y[i][j], key.p)) % key.p
+                yc = (yc * pow(c[i].c[0][j], sk.y[i][j], key.p)) % key.p
 
             # [d_i dot t_i]
-            dt = (pow(c[i].t[0], sk.d[i][0], key.p) * pow(c[i].t[1], sk.d[i][1], key.p)) % key.p
+            dt = 1
+            for j in range(2):
+                dt = (dt * pow(c[i].t[0][j], sk.d[i][0][j], key.p)) % key.p
 
             cul = (cul * yc * inverse(dt, key.p)) % key.p
 
@@ -113,7 +113,8 @@ class FeDamgardMulti:
         for i in range(key.n):
             if len(y[i]) != key.m:
                 raise Exception(f"Function vector must be a {key.n} x {key.m} matrix")
-            d.append(Matrix(y[i]).T * key.msk.w)
-            z += Matrix(y[i]).dot(key.msk.u.row(i))
+            y_i = Matrix(y[i])
+            d.append(y_i * key.msk.w)
+            z += y_i.dot(key.msk.u.row(i))
 
         return _FeDamgardMulti_SK(y, d, z)

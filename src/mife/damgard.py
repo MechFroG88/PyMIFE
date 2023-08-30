@@ -2,7 +2,7 @@ from secrets import randbits, randbelow
 from Crypto.Util.number import getStrongPrime, inverse
 from typing import List, Tuple
 
-from src.mife.common import inner_product, discrete_log_bound
+from src.mife.common import pow, inner_product, discrete_log_bound
 
 # https://eprint.iacr.org/2015/608.pdf
 

@@ -10,7 +10,7 @@ authors = [
 ]
 dependencies = [
     'pycryptodome >= 3.18.0',
-    'sympy >= 1.12'
+    'gmpy2 >= 2.1.5'
 ]
 description = "Python Functional Encryption Library"
 readme = "README.md"

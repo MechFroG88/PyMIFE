@@ -1,7 +1,11 @@
 from Crypto.Util.number import isPrime
 from random import randrange
 from math import isqrt
+import gmpy2
+from functools import partial
 
+def pow(a, b, p):
+    return gmpy2.powmod(a, b, p)
 
 def inner_product(x, y):
     if len(x) != len(y):
@@ -65,5 +69,8 @@ def discrete_log_bound_brute(p, a, g, bounds):
     raise Exception(f"Discrete log for {a} under base {g} not found in bounds ({bounds[0]}, {bounds[1]})")
 
 
+def pow2(b, a, p):
+    return gmpy2.powmod(a, b, p)
+
 def to_group(p, g):
-    return lambda x: pow(g, int(x), p)
+    return partial(pow2, a=g, p=p)
