@@ -1,8 +1,10 @@
-import unittest
+import time
+import logging
+from tests.test_base import TestBase
 from src.mife.damgard import FeDamgard
 
 
-class TestFeDamgard(unittest.TestCase):
+class TestFeDamgard(TestBase):
     def test_generate(self):
         n = 10
         bits = 1024
@@ -26,6 +28,7 @@ class TestFeDamgard(unittest.TestCase):
         self.assertEqual(sk.tx, sum([key.msk[i][1] * y[i] for i in range(n)]))
 
     def test_scheme_1(self):
+        start = time.time()
         n = 10
         bits = 512
         x = [i for i in range(n)]
@@ -34,10 +37,15 @@ class TestFeDamgard(unittest.TestCase):
         c = FeDamgard.encrypt(x, key)
         sk = FeDamgard.keygen(y, key)
         m = FeDamgard.decrypt(c, key, sk, (0, 1000))
+        end = time.time()
+
+        logging.info(f'FeDamgard test scheme 1 performance: {end - start}s')
+
         expected = sum([a * b for a, b in zip(x, y)])
         self.assertEqual(expected, m)
 
     def test_scheme_2(self):
+        start = time.time()
         n = 20
         bits = 512
         x = [i for i in range(n)]
@@ -46,6 +54,10 @@ class TestFeDamgard(unittest.TestCase):
         c = FeDamgard.encrypt(x, key)
         sk = FeDamgard.keygen(y, key)
         m = FeDamgard.decrypt(c, key, sk, (-100000, 100000))
-        expected = sum([a * b for a, b in zip(x, y)]) % (key.p-1)
+        end = time.time()
+
+        logging.info(f'FeDamgard test scheme 2 performance: {end - start}s')
+
+        expected = sum([a * b for a, b in zip(x, y)])
         self.assertEqual(expected, m)
 

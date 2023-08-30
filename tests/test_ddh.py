@@ -1,8 +1,11 @@
-import unittest
+import time
+import logging
+
+from tests.test_base import TestBase
 from src.mife.ddh import FeDDH
 
 
-class TestFeDamgardMulti(unittest.TestCase):
+class TestFeDDH(TestBase):
     def test_generate(self):
         n = 10
         bits = 1024
@@ -24,6 +27,7 @@ class TestFeDamgardMulti(unittest.TestCase):
         self.assertEqual(sk.sk, sum([a * b for a, b in zip(y, key.msk)]))
 
     def test_scheme_1(self):
+        start = time.time()
         n = 10
         bits = 512
         x = [i for i in range(n)]
@@ -32,10 +36,15 @@ class TestFeDamgardMulti(unittest.TestCase):
         c = FeDDH.encrypt(x, key)
         sk = FeDDH.keygen(y, key)
         m = FeDDH.decrypt(c, key, sk, (0, 1000))
+        end = time.time()
+
+        logging.info(f'FeDDH test scheme 1 performance: {end - start}s')
+
         expected = sum([a * b for a, b in zip(x, y)])
         self.assertEqual(expected, m)
 
     def test_scheme_2(self):
+        start = time.time()
         n = 20
         bits = 512
         x = [i for i in range(n)]
@@ -44,6 +53,10 @@ class TestFeDamgardMulti(unittest.TestCase):
         c = FeDDH.encrypt(x, key)
         sk = FeDDH.keygen(y, key)
         m = FeDDH.decrypt(c, key, sk, (-100000, 100000))
-        expected = sum([a * b for a, b in zip(x, y)]) % (key.p-1)
+        end = time.time()
+
+        logging.info(f'FeDDH test scheme 2 performance: {end - start}s')
+
+        expected = sum([a * b for a, b in zip(x, y)])
         self.assertEqual(expected, m)
 
