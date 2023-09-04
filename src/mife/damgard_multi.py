@@ -3,7 +3,11 @@ from Crypto.Util.number import getStrongPrime, inverse
 from typing import List, Tuple
 
 from src.mife.data.matrix import Matrix
-from src.mife.common import pow, discrete_log_bound, to_group
+from src.mife.common import discrete_log_bound, inner_product
+
+from src.mife.data.group import GroupBase, GroupElem
+from src.mife.data.zmod import Zmod
+
 
 # https://eprint.iacr.org/2017/972.pdf
 
@@ -14,21 +18,23 @@ class _FeDamgardMulti_MPK:
         self.a = a
         self.wa = wa
 
+
 class _FeDamgardMulti_MSK:
 
     def __init__(self, w: Matrix, u: Matrix):
         self.w = w
         self.u = u
 
+
 class _FeDamgardMulti_MK:
-    def __init__(self, g: int, n: int, m: int, p: int, msk: _FeDamgardMulti_MSK, mpk: _FeDamgardMulti_MPK):
+    def __init__(self, g: GroupElem, n: int, m: int, F: GroupBase, msk: _FeDamgardMulti_MSK, mpk: _FeDamgardMulti_MPK):
         self.g = g
         self.n = n
         self.m = m
-        self.p = p
+        self.F = F
+        self.to_group = lambda x: x * self.g
         self.msk = msk
         self.mpk = mpk
-        self.to_group = to_group(self.p, self.g)
 
     def has_private_key(self) -> bool:
         return self.msk is not None
@@ -47,62 +53,58 @@ class _FeDamgardMulti_C:
         self.c = c
         self.index = index
 
+
 class FeDamgardMulti:
     @staticmethod
-    def generate(n: int, m: int, bits: int) -> _FeDamgardMulti_MK:
-        g = 2
-        p = getStrongPrime(bits)
-        a = randbelow(p)
-        a_v = Matrix([1, a])
-        W = Matrix([[randbelow(p), randbelow(p)] for _ in range(m)])
-        u = Matrix([[randbelow(p) for _ in range(m)] for _ in range(n)])
+    def generate(n: int, m: int, F: GroupBase = None) -> _FeDamgardMulti_MK:
+        if F is None:
+            F = Zmod(getStrongPrime(1024))
+        g = F.generator()
+        a_v = Matrix([1, randbelow(F.order())])
+        W = Matrix([[randbelow(F.order()), randbelow(F.order())] for _ in range(m)])
+        u = Matrix([[randbelow(F.order()) for _ in range(m)] for _ in range(n)])
+
+        to_group = lambda x: x * g
 
         msk = _FeDamgardMulti_MSK(W, u)
-        mpk = _FeDamgardMulti_MPK(
-            a_v.apply_func(to_group(p, g), p),
-            (W * a_v.T).apply_func(to_group(p, g), p)
-        )
+        mpk = _FeDamgardMulti_MPK(a_v.apply_func(to_group), (W * a_v.T).apply_func(to_group))
 
-        return _FeDamgardMulti_MK(g, n, m, p, msk=msk, mpk=mpk)
+        return _FeDamgardMulti_MK(g, n, m, F, msk=msk, mpk=mpk)
 
     @staticmethod
     def encrypt(x: List[int], i: int, key: _FeDamgardMulti_MK) -> _FeDamgardMulti_C:
         if len(x) != key.m:
             raise Exception(f"Encrypt vector must be of length {key.m}")
-        if not(0 <= i < key.n):
+        if not (0 <= i < key.n):
             raise Exception(f"Index of vector must be within [0,{key.n})")
 
         x = Matrix(x)
-        r = randbelow(key.p)
+        r = randbelow(key.F.order())
 
-        t = key.mpk.a ** r
+        t = r * key.mpk.a
 
-        c = (x + key.msk.u.row(i)).apply_func(key.to_group, key.p)
-        c = c.point_mul((key.mpk.wa ** r).T)
+        c = (x + key.msk.u.row(i)).apply_func(key.to_group) + (r * key.mpk.wa).T
 
         return _FeDamgardMulti_C(t, c, i)
 
     @staticmethod
-    def decrypt(c: List[_FeDamgardMulti_C], key: _FeDamgardMulti_MK, sk: _FeDamgardMulti_SK, bound: Tuple[int, int]) -> int:
-        cul = 1
+    def decrypt(c: List[_FeDamgardMulti_C], key: _FeDamgardMulti_MK, sk: _FeDamgardMulti_SK,
+                bound: Tuple[int, int]) -> int:
+        cul = key.F.identity()
         for i in range(key.n):
             if c[i].index != i:
                 raise Exception(f"Ciphertext index incorrect")
 
             # [y_i dot c_i]
-            yc = 1
-            for j in range(key.m):
-                yc = (yc * pow(c[i].c[0][j], sk.y[i][j], key.p)) % key.p
+            yc = inner_product(sk.y[i], c[i].c[0], identity=key.F.identity())
 
             # [d_i dot t_i]
-            dt = 1
-            for j in range(2):
-                dt = (dt * pow(c[i].t[0][j], sk.d[i][0][j], key.p)) % key.p
+            dt = inner_product(sk.d[i][0], c[i].t[0], identity=key.F.identity())
 
-            cul = (cul * yc * inverse(dt, key.p)) % key.p
+            cul = cul + yc - dt
 
-        cul = (cul * inverse(key.to_group(sk.z), key.p)) % key.p
-        return discrete_log_bound(key.p, cul, key.g, bound)
+        cul = cul - key.to_group(sk.z)
+        return discrete_log_bound(cul, key.g, bound)
 
     @staticmethod
     def keygen(y: List[List[int]], key: _FeDamgardMulti_MK) -> _FeDamgardMulti_SK:
