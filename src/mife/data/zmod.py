@@ -17,8 +17,6 @@ class Zmod(GroupBase):
 
     def __call__(self, elem: int) -> _ZmodElem:
         elem = elem % self.modulus
-        if elem == 0:
-            raise Exception(f"Multiplicative group of {self.modulus} does not contain the element {elem}")
         return _ZmodElem(self, mpz(elem))
 
     def __eq__(self, other: Self) -> bool:
@@ -65,3 +63,6 @@ class _ZmodElem(GroupElem):
 
     def __hash__(self):
         return hash(self.val)
+
+    def __str__(self):
+        return str(self.val)
