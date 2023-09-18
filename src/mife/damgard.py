@@ -41,11 +41,13 @@ class FeDamgard:
     def generate(n: int, F: GroupBase = None) -> _FeDamgard_MK:
         if F is None:
             F = Zmod(getStrongPrime(1024))
-        while True:
+        for _ in range(100):
             g = F.generator()
             h = F.generator()
             if g != h:
                 break
+        if g == h:
+            print(f"There must be at least 2 distinct generator for the Group {F}")
         msk = [(randbelow(F.order()), randbelow(F.order())) for _ in range(n)]
         mpk = [msk[i][0] * g + msk[i][1] * h for i in range(n)]
         return _FeDamgard_MK(g, h, n, F, msk=msk, mpk=mpk)

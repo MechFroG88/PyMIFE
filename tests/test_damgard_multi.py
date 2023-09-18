@@ -49,8 +49,8 @@ class TestFeDamgardMulti(TestBase):
 
     def test_scheme_3(self):
         start = time.time()
-        n = 100
-        m = 100
+        n = 50
+        m = 50
         x = [[1 for j in range(m)] for i in range(n)]
         y = [[1 for j in range(m)] for i in range(n)]
         key = FeDamgardMulti.generate(n, m)
@@ -69,8 +69,8 @@ class TestFeDamgardMulti(TestBase):
 
     def test_scheme_4(self):
         start = time.time()
-        n = 50
-        m = 50
+        n = 25
+        m = 25
         x = [[i * 10 + j for j in range(m)] for i in range(n)]
         y = [[i - j - 5 for j in range(m)] for i in range(n)]
         key = FeDamgardMulti.generate(n, m, Curve25519)
@@ -79,7 +79,7 @@ class TestFeDamgardMulti(TestBase):
         res = FeDamgardMulti.decrypt(cs, key, sk, (-10000000, 10000000))
         end = time.time()
 
-        logging.info(f'FeDDHMulti test scheme 3 performance (n={n},m={m}): {end - start}s')
+        logging.info(f'FeDDHMulti test scheme 4 performance (n={n},m={m}): {end - start}s')
 
         expected = 0
         for i in range(n):

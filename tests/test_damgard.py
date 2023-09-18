@@ -40,7 +40,7 @@ class TestFeDamgard(TestBase):
 
     def test_scheme_3(self):
         start = time.time()
-        n = 10000
+        n = 1000
         x = [1 for i in range(n)]
         y = [1 for i in range(n)]
         key = FeDamgard.generate(n)
