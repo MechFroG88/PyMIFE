@@ -12,7 +12,7 @@ class TestFeLWE(TestBase):
         n = 10
         x = [i - 10 for i in range(n)]
         y = [i for i in range(n)]
-        key = FeLWE.generate(n, 4, 4, n=3)
+        key = FeLWE.generate(n, 4, 4)
         c = FeLWE.encrypt(x, key)
         sk = FeLWE.keygen(y, key)
         m = FeLWE.decrypt(c, key, sk)
@@ -28,7 +28,7 @@ class TestFeLWE(TestBase):
         n = 20
         x = [(i * 10 + 2) for i in range(n)]
         y = [31 for i in range(n)]
-        key = FeLWE.generate(n, 5, 5, n=3)
+        key = FeLWE.generate(n, 5, 5)
         c = FeLWE.encrypt(x, key)
         sk = FeLWE.keygen(y, key)
         m = FeLWE.decrypt(c, key, sk)
@@ -44,7 +44,7 @@ class TestFeLWE(TestBase):
         n = 100
         x = [i for i in range(n)]
         y = [i for i in range(n)]
-        key = FeLWE.generate(n, 7, 7, n=10)
+        key = FeLWE.generate(n, 7, 7)
         c = FeLWE.encrypt(x, key)
         sk = FeLWE.keygen(y, key)
         m = FeLWE.decrypt(c, key, sk)
@@ -60,7 +60,7 @@ class TestFeLWE(TestBase):
         n = 10
         x = [(i + 10) for i in range(n)]
         y = [2 for i in range(n)]
-        key = FeLWE.generate(n, 5, 2, n=4)
+        key = FeLWE.generate(n, 5, 2)
         c = FeLWE.encrypt(x, key)
         sk = FeLWE.keygen(y, key)
         m = FeLWE.decrypt(c, key, sk)

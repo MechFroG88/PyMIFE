@@ -44,15 +44,15 @@ class _FeLWE_C:
 
 class FeLWE:
     @staticmethod
-    def generate(l: int, msg_bit: int, func_bit: int, n: int = 1) -> _FeLWE_MK:
+    def generate(l: int, msg_bit: int, func_bit: int, n: int = 5) -> _FeLWE_MK:
+
         p = getPrime((msg_bit + func_bit) * 2 + l.bit_length() + 1)
         q = getPrime(p.bit_length() + n.bit_length() * 2 + (msg_bit + func_bit) + l.bit_length() // 2)
         G = ZmodR(q)
 
         m = 2 * (l + n + 1) * q.bit_length() + 1
         delta = round(q / p)
-        sigma = (l * 2**(msg_bit) + 1) / (2 * func_bit * gmpy2.sqrt(2 * gmpy2.const_pi(3) * n) * max(gmpy2.log2(n), 1) ** 2)
-
+        sigma = delta / (2**func_bit * gmpy2.sqrt(2 * l * m * n))
         sys_random = random.SystemRandom()
 
         A = Matrix([[G(random.randrange(q)) for _ in range(n)] for _ in range(m)])
