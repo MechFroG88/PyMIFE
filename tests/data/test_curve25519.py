@@ -1,6 +1,5 @@
 from tests.test_base import TestBase
-from src.mife.data.curve25519_y import Curve25519
-from secrets import randbits
+from src.mife.data import Curve25519
 
 
 class TestFeDamgard(TestBase):

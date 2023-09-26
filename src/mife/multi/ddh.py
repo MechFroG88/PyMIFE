@@ -1,12 +1,12 @@
-from secrets import randbits, randbelow
-from Crypto.Util.number import getStrongPrime, inverse
+from secrets import randbelow
+from Crypto.Util.number import getStrongPrime
 from typing import List, Tuple
 
-from src.mife.data.matrix import Matrix
+from src.mife.data import Matrix
 from src.mife.common import discrete_log_bound, inner_product
 
-from src.mife.data.group import GroupBase, GroupElem
-from src.mife.data.zmod import Zmod
+from src.mife.data import GroupBase, GroupElem
+from src.mife.data import Zmod
 
 
 # https://eprint.iacr.org/2017/972.pdf

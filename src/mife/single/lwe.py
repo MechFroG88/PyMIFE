@@ -1,14 +1,13 @@
 import gmpy2
-import math
 import random
 
-from secrets import randbits, randbelow
-from Crypto.Util.number import getPrime, inverse
-from typing import List, Tuple
+from secrets import randbelow
+from Crypto.Util.number import getPrime
+from typing import List
 
-from src.mife.common import inner_product, discrete_log_bound
+from src.mife.common import inner_product
 from src.mife.data.zmod_r import ZmodR
-from src.mife.data.matrix import Matrix
+from src.mife.data import Matrix
 
 # https://eprint.iacr.org/2015/017.pdf
 
@@ -21,11 +20,11 @@ class _FeLWE_MK:
         self.l = l
         self.n = n
         self.m = m
-        self.delta = delta
         self.G = G
         self.A = A
         self.msk = msk
         self.mpk = mpk
+        self.delta = delta
 
     def has_private_key(self) -> bool:
         return self.msk is not None
@@ -45,14 +44,15 @@ class _FeLWE_C:
 class FeLWE:
     @staticmethod
     def generate(l: int, msg_bit: int, func_bit: int, n: int = 5) -> _FeLWE_MK:
-
         p = getPrime((msg_bit + func_bit) * 2 + l.bit_length() + 1)
         q = getPrime(p.bit_length() + n.bit_length() * 2 + (msg_bit + func_bit) + l.bit_length() // 2)
         G = ZmodR(q)
 
         m = 2 * (l + n + 1) * q.bit_length() + 1
+
         delta = round(q / p)
-        sigma = delta / (2**func_bit * gmpy2.sqrt(2 * l * m * n))
+        sigma = q / (2**func_bit * p * gmpy2.sqrt(2 * l * m * n))
+
         sys_random = random.SystemRandom()
 
         A = Matrix([[G(random.randrange(q)) for _ in range(n)] for _ in range(m)])

@@ -1,8 +1,7 @@
 import time
 import logging
 from tests.test_base import TestBase
-from src.mife.damgard import FeDamgard
-from src.mife.data.curve25519 import Curve25519
+from src.mife.single.damgard import FeDamgard
 
 
 class TestFeDamgard(TestBase):

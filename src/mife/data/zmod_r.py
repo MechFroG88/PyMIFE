@@ -1,11 +1,7 @@
 from __future__ import annotations
 
-import secrets
-
-from src.mife.data.group import GroupBase, GroupElem
 from typing import Self
-from gmpy2 import powmod, gcd, invert, mpz
-from Crypto.Util.number import isPrime
+from gmpy2 import mpz
 
 
 class ZmodR():

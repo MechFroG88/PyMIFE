@@ -4,7 +4,7 @@ from tests.test_base import TestBase
 from Crypto.Util.number import getStrongPrime
 from secrets import randbelow
 from gmpy2 import powmod
-from src.mife.data.matrix import Matrix
+
 
 class TestPow(TestBase):
 
