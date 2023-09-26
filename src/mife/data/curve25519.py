@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from src.mife.data.group import GroupBase, GroupElem
 from typing import Self, List
-from gmpy2 import invert
+from gmpy2 import invert, mpz
 
 
 class Curve25519(GroupBase):
@@ -121,6 +121,11 @@ class _Curve25519Elem(GroupElem):
         y = (y * invert(2 * Curve25519.b * diff.y, Curve25519.p)) % Curve25519.p
 
         return _Curve25519Elem(x, y)
+
+    def __mul__(self, other):
+        if isinstance(other, int) or isinstance(other, mpz):
+            return self.__rmul__(other)
+        raise f"Unsupported multiplication between {type(self)}, {type(other)}"
 
     def power(self, x):
         x = x % Curve25519.order()

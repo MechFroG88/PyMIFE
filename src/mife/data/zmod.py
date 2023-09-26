@@ -58,6 +58,11 @@ class _ZmodElem(GroupElem):
     def __rmul__(self, other: int):
         return _ZmodElem(self.group, powmod(self.val, other, self.group.modulus))
 
+    def __mul__(self, other):
+        if isinstance(other, int) or isinstance(other, mpz):
+            return self.__rmul__(other)
+        raise f"Unsupported multiplication between {type(self)}, {type(other)}"
+
     def __eq__(self, other):
         return type(self) == type(other) and self.group == other.group and self.val == other.val
 

@@ -2,11 +2,11 @@ from secrets import randbelow
 from Crypto.Util.number import getStrongPrime
 from typing import List, Tuple
 
-from src.mife.data import Matrix
+from src.mife.data.matrix import Matrix
 from src.mife.common import discrete_log_bound, inner_product
 
-from src.mife.data import GroupBase, GroupElem
-from src.mife.data import Zmod
+from src.mife.data.group import GroupBase, GroupElem
+from src.mife.data.zmod import Zmod
 
 
 # https://eprint.iacr.org/2017/972.pdf
@@ -27,7 +27,8 @@ class _FeDamgardMulti_MSK:
 
 
 class _FeDamgardMulti_MK:
-    def __init__(self, g: GroupElem, n: int, m: int, F: GroupBase, msk: _FeDamgardMulti_MSK, mpk: _FeDamgardMulti_MPK):
+    def __init__(self, g: GroupElem, n: int, m: int, F: GroupBase,
+                 mpk: _FeDamgardMulti_MPK, msk: _FeDamgardMulti_MSK = None):
         self.g = g
         self.n = n
         self.m = m

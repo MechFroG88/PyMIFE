@@ -3,8 +3,8 @@ from Crypto.Util.number import getStrongPrime
 from typing import List, Tuple
 
 from src.mife.common import inner_product, discrete_log_bound
-from src.mife.data import Zmod
-from src.mife.data import GroupBase, GroupElem
+from src.mife.data.zmod import Zmod
+from src.mife.data.group import GroupBase, GroupElem
 
 
 # https://eprint.iacr.org/2015/608.pdf
