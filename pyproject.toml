@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pymife"
-version = "0.0.4"
+version = "0.0.5"
 authors = [
   { name="mechfrog88", email="kelzzin2@gmail.com" },
 ]
