@@ -5,9 +5,9 @@ from secrets import randbelow
 from Crypto.Util.number import getPrime
 from typing import List
 
-from src.mife.common import inner_product
-from src.mife.data.zmod_r import ZmodR
-from src.mife.data.matrix import Matrix
+from mife.common import inner_product
+from mife.data.zmod_r import ZmodR
+from mife.data.matrix import Matrix
 
 # References:
 # https://eprint.iacr.org/2015/017.pdf

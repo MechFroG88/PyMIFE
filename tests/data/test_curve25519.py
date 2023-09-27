@@ -1,5 +1,5 @@
 from tests.test_base import TestBase
-from src.mife.data.curve25519 import Curve25519
+from mife.data.curve25519 import Curve25519
 
 
 class TestFeDamgard(TestBase):

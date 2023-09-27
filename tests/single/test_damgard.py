@@ -1,7 +1,7 @@
 import time
 import logging
 from tests.test_base import TestBase
-from src.mife.single.damgard import FeDamgard
+from mife.single.damgard import FeDamgard
 
 
 class TestFeDamgard(TestBase):

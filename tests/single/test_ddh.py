@@ -2,7 +2,7 @@ import time
 import logging
 
 from tests.test_base import TestBase
-from src.mife.single.ddh import FeDDH
+from mife.single.ddh import FeDDH
 
 
 class TestFeDDH(TestBase):

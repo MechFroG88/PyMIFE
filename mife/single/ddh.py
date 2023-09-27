@@ -2,9 +2,9 @@ from secrets import randbelow
 from Crypto.Util.number import getStrongPrime
 from typing import List, Tuple
 
-from src.mife.common import inner_product, discrete_log_bound
-from src.mife.data.zmod import Zmod
-from src.mife.data.group import GroupBase, GroupElem
+from mife.common import inner_product, discrete_log_bound
+from mife.data.zmod import Zmod
+from mife.data.group import GroupBase, GroupElem
 
 # References:
 # https://eprint.iacr.org/2015/017.pdf

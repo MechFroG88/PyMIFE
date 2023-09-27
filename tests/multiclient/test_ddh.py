@@ -1,8 +1,8 @@
 import time
 import logging
 from tests.test_base import TestBase
-from src.mife.multiclient.ddh import FeDDHMultiClient
-from src.mife.data.curve25519 import Curve25519
+from mife.multiclient.ddh import FeDDHMultiClient
+from mife.data.curve25519 import Curve25519
 
 
 class TestFeDDHMultiClient(TestBase):

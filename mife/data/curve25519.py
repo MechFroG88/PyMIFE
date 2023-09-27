@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from src.mife.data.group import GroupBase, GroupElem
+from mife.data.group import GroupBase, GroupElem
 from typing import Self, List
 from gmpy2 import invert, mpz
 

@@ -2,10 +2,10 @@ from secrets import randbelow
 from Crypto.Util.number import getStrongPrime, bytes_to_long
 from typing import List, Tuple, Callable
 
-from src.mife.common import discrete_log_bound, inner_product
+from mife.common import discrete_log_bound, inner_product
 
-from src.mife.data.group import GroupBase, GroupElem
-from src.mife.data.zmod import Zmod
+from mife.data.group import GroupBase, GroupElem
+from mife.data.zmod import Zmod
 
 from hashlib import shake_256
 

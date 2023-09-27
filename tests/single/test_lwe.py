@@ -2,7 +2,7 @@ import time
 import logging
 
 from tests.test_base import TestBase
-from src.mife.single.lwe import FeLWE
+from mife.single.lwe import FeLWE
 
 
 class TestFeLWE(TestBase):

@@ -92,7 +92,7 @@ Using Curve25519
 
 ```python
 from mife.multi.damgard import FeDamgardMulti
-from src.mife.data.curve25519 import Curve25519
+from mife.data.curve25519 import Curve25519
 
 n = 25
 m = 25
