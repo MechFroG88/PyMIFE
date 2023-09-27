@@ -15,7 +15,7 @@ class TestFeDamgardMulti(TestBase):
         x = [[i + j for j in range(m)] for i in range(n)]
         y = [[i - j + 10 for j in range(m)] for i in range(n)]
         key = FeDamgardMulti.generate(n, m)
-        cs = [FeDamgardMulti.encrypt(x[i], i, key) for i in range(n)]
+        cs = [FeDamgardMulti.encrypt(x[i], key.get_enc_key(i)) for i in range(n)]
         sk = FeDamgardMulti.keygen(y, key)
         m = FeDamgardMulti.decrypt(cs, key, sk, (0, 2000))
         end = time.time()
@@ -34,7 +34,7 @@ class TestFeDamgardMulti(TestBase):
         x = [[i * 10 + j for j in range(m)] for i in range(n)]
         y = [[i - j - 5 for j in range(m)] for i in range(n)]
         key = FeDamgardMulti.generate(n, m)
-        cs = [FeDamgardMulti.encrypt(x[i], i, key) for i in range(n)]
+        cs = [FeDamgardMulti.encrypt(x[i], key.get_enc_key(i)) for i in range(n)]
         sk = FeDamgardMulti.keygen(y, key)
         res = FeDamgardMulti.decrypt(cs, key, sk, (-10000000, 10000000))
         end = time.time()
@@ -54,7 +54,7 @@ class TestFeDamgardMulti(TestBase):
         x = [[1 for j in range(m)] for i in range(n)]
         y = [[1 for j in range(m)] for i in range(n)]
         key = FeDamgardMulti.generate(n, m)
-        cs = [FeDamgardMulti.encrypt(x[i], i, key) for i in range(n)]
+        cs = [FeDamgardMulti.encrypt(x[i], key.get_enc_key(i)) for i in range(n)]
         sk = FeDamgardMulti.keygen(y, key)
         res = FeDamgardMulti.decrypt(cs, key, sk, (-100000, 100000))
         end = time.time()
@@ -74,7 +74,7 @@ class TestFeDamgardMulti(TestBase):
         x = [[i * 10 + j for j in range(m)] for i in range(n)]
         y = [[i - j - 5 for j in range(m)] for i in range(n)]
         key = FeDamgardMulti.generate(n, m, Curve25519)
-        cs = [FeDamgardMulti.encrypt(x[i], i, key) for i in range(n)]
+        cs = [FeDamgardMulti.encrypt(x[i], key.get_enc_key(i)) for i in range(n)]
         sk = FeDamgardMulti.keygen(y, key)
         res = FeDamgardMulti.decrypt(cs, key, sk, (-10000000, 10000000))
         end = time.time()

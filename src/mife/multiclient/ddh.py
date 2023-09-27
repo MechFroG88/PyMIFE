@@ -2,7 +2,6 @@ from secrets import randbelow
 from Crypto.Util.number import getStrongPrime, bytes_to_long
 from typing import List, Tuple, Callable
 
-from src.mife.data.matrix import Matrix
 from src.mife.common import discrete_log_bound, inner_product
 
 from src.mife.data.group import GroupBase, GroupElem
@@ -10,13 +9,23 @@ from src.mife.data.zmod import Zmod
 
 from hashlib import shake_256
 
-
+# References:
 # https://eprint.iacr.org/2017/989.pdf
 
 class _FeDDHMultiClient_MK:
     def __init__(self, g: GroupElem, n: int, m: int, F: GroupBase,
                  hash: Callable[[bytes], Tuple[int, int]],
                  msk: List[List[Tuple[int, int]]] = None):
+        """
+        Initialize FeDDHMultiClient master key
+
+        :param g: Generator of the group
+        :param n: Number of clients
+        :param m: Dimension of message vector for each client
+        :param F: The Group
+        :param hash: Hash function to use
+        :param msk: Master secret key
+        """
         self.g = g
         self.n = n
         self.m = m
@@ -25,6 +34,12 @@ class _FeDDHMultiClient_MK:
         self.msk = msk
 
     def get_enc_key(self, index: int):
+        """
+        Get the encryption key for a client
+
+        :param index: Index of the client
+        :return: Encryption key for the client
+        """
         if not self.has_private_key:
             raise Exception("The master key has no private key")
         if not (0 <= index < self.n):
@@ -38,6 +53,13 @@ class _FeDDHMultiClient_EncK:
     def __init__(self, g: GroupElem,
                  hash: Callable[[bytes], Tuple[int, int]],
                  enc_key: List[Tuple[int, int]]):
+        """
+        Initialize FeDDHMultiClient encryption key
+
+        :param g: Generator of the group
+        :param hash: Hash function to use
+        :param enc_key: Secret key shared with the client
+        """
         self.g = g
         self.hash = hash
         self.enc_key = enc_key
@@ -45,23 +67,50 @@ class _FeDDHMultiClient_EncK:
 
 class _FeDDHMultiClient_SK:
     def __init__(self, y: List[List[int]], d: Tuple[int, int]):
+        """
+        Initialize FeDDHMultiClient decryption key
+
+        :param y: Function vector
+        :param d: <msk, y>
+        """
         self.y = y
         self.d = d
 
 class _FeDDHMultiClient_C:
     def __init__(self, c: List[GroupElem]):
+        """
+        Initialize FeDDHMultiClient cipher text
+
+        :param c: (<h(tag), s[i]> + x[i]) * g
+        """
         self.c = c
 
 class FeDDHMultiClient:
 
     @staticmethod
-    def default_hash(tag : bytes, maximum_bit: int) -> Tuple[int, int]:
+    def default_hash(tag: bytes, maximum_bit: int) -> Tuple[int, int]:
+        """
+        Default hash H : tag -> Z_p x Z_p with shake_256
+
+        :param tag:
+        :param maximum_bit:
+        :return: (u1, u2) with u1, u2 < 2^maximum_bit
+        """
         t = shake_256(tag).digest(maximum_bit * 2)
         return bytes_to_long(t[:len(t)//2]), bytes_to_long(t[len(t)//2:])
 
     @staticmethod
     def generate(n: int, m: int, F: GroupBase = None,
                  hash: Callable[[bytes, int], Tuple[int, int]] = None) -> _FeDDHMultiClient_MK:
+        """
+        Generate a FeDDHMultiClient master key
+
+        :param n: Number of clients
+        :param m: Dimension of message vector for each client
+        :param F: Group to use for the scheme. If set to None, a random 1024 bit prime group will be used
+        :param hash: Hash function to use. If set to None, a default hash function will be used
+        :return: FeDDHMultiClient master key
+        """
         if F is None:
             F = Zmod(getStrongPrime(1024))
         if hash is None:
@@ -74,6 +123,14 @@ class FeDDHMultiClient:
 
     @staticmethod
     def encrypt(x: List[int], tag: bytes, key: _FeDDHMultiClient_EncK) -> _FeDDHMultiClient_C:
+        """
+        Encrypt message vector
+
+        :param x: Message vector
+        :param tag: Tag for the encryption, usually time stamp
+        :param key: Client encryption key
+        :return: FeDDHMultiClient cipher text
+        """
         if len(x) != len(key.enc_key):
             raise Exception(f"Encrypt vector must be of length {len(key.enc_key)}")
 
@@ -91,6 +148,16 @@ class FeDDHMultiClient:
     def decrypt(c: List[_FeDDHMultiClient_C], tag: bytes,
                 key: _FeDDHMultiClient_MK, sk: _FeDDHMultiClient_SK,
                 bound: Tuple[int, int]) -> int:
+        """
+        Decrypt FeDDHMultiClient cipher text
+
+        :param c: FeDDHMultiClient cipher text
+        :param tag: Tag for decryption, the same tag must be used for encryption
+        :param key: FeDDHMultiClient public key
+        :param sk: FeDDHMultiClient decryption key
+        :param bound: Bound for the discrete log problem
+        :return: Decrypted message
+        """
         u1, u2 = key.hash(tag)
         u1, u2 = key.g * u1, key.g * u2
 
@@ -104,6 +171,13 @@ class FeDDHMultiClient:
 
     @staticmethod
     def keygen(y: List[List[int]], key: _FeDDHMultiClient_MK) -> _FeDDHMultiClient_SK:
+        """
+        Generate a FeDDHMultiClient decryption key
+
+        :param y: Function vector
+        :param key: FeDDHMultiClient master key
+        :return: FeDDHMultiClient decryption key
+        """
         if len(y) != key.n:
             raise Exception(f"Function vector must be a {key.n} x {key.m} matrix")
         cul_1 = 0

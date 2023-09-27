@@ -6,24 +6,43 @@ from src.mife.common import inner_product, discrete_log_bound
 from src.mife.data.zmod import Zmod
 from src.mife.data.group import GroupBase, GroupElem
 
-
+# References:
 # https://eprint.iacr.org/2015/608.pdf
 
 class _FeDamgard_MK:
-    def __init__(self, g: GroupElem, h: GroupElem, n: int, F: GroupBase, **kwargs):
+    def __init__(self, g: GroupElem, h: GroupElem, n: int, F: GroupBase,
+                 mpk: List[Tuple], msk: List[Tuple[int, int]] = None):
+        """
+        Initialize FeDamgard master key
+
+        :param g: First generator of the group
+        :param h: Second generator of the group
+        :param n: Dimension of the vector
+        :param F: Group to use for the scheme.
+        :param mpk: Master public key
+        :param msk: Master secret key
+        """
         self.g = g
         self.h = h
         self.n = n
         self.F = F
-        self.msk = kwargs.get('msk')
-        self.mpk = kwargs.get('mpk')
+        self.msk = msk
+        self.mpk = mpk
 
     def has_private_key(self) -> bool:
         return self.msk is not None
 
 
+
 class _FeDamgard_SK:
     def __init__(self, y: List[int], sx: int, tx: int):
+        """
+        Initialize FeDamgard decryption key
+
+        :param y: Function vector
+        :param sx: <s, y>
+        :param tx: <t, y>
+        """
         self.y = y
         self.sx = sx
         self.tx = tx
@@ -31,14 +50,29 @@ class _FeDamgard_SK:
 
 class _FeDamgard_C:
     def __init__(self, g_r: GroupElem, h_r: GroupElem, c: List[GroupElem]):
+        """
+        Initialize FeDamgard cipher text
+
+        :param g_r: r * g
+        :param h_r: r * h
+        :param c: x[i] * g + r * mpk[i]
+        """
         self.g_r = g_r
         self.h_r = h_r
         self.c = c
 
 
 class FeDamgard:
+
     @staticmethod
     def generate(n: int, F: GroupBase = None) -> _FeDamgard_MK:
+        """
+        Generate a FeDamgard master key
+
+        :param n: Dimension of the encrypt vector
+        :param F: Group to use for the scheme. If set to None, a random 1024 bit prime group will be used
+        :return: FeDamgard master key
+        """
         if F is None:
             F = Zmod(getStrongPrime(1024))
         for _ in range(100):
@@ -54,6 +88,13 @@ class FeDamgard:
 
     @staticmethod
     def encrypt(x: List[int], pub: _FeDamgard_MK) -> _FeDamgard_C:
+        """
+        Encrypt FeDamgard message vector
+
+        :param x: Message vector
+        :param pub: FeDamgard public key
+        :return: FeDamgard cipher text
+        """
         if len(x) != pub.n:
             raise Exception(f"Encrypt vector must be of length {pub.n}")
         r = randbelow(pub.F.order())
@@ -64,6 +105,15 @@ class FeDamgard:
 
     @staticmethod
     def decrypt(c: _FeDamgard_C, pub: _FeDamgard_MK, sk: _FeDamgard_SK, bound: Tuple[int, int]) -> int:
+        """
+        Decrypt FeDamgard cipher text within a bound
+
+        :param c: FeDamgard cipher text
+        :param pub: FeDamgard public key
+        :param sk: FeDamgard decryption key
+        :param bound: Bound for discrete logarithm search, the decrypted text should be within the bound
+        :return: Decrypted message
+        """
         cul = pub.F.identity()
         for i in range(pub.n):
             cul = cul + sk.y[i] * c.c[i]
@@ -72,6 +122,13 @@ class FeDamgard:
 
     @staticmethod
     def keygen(y: List[int], key: _FeDamgard_MK) -> _FeDamgard_SK:
+        """
+        Generate FeDamgard decryption key
+
+        :param y: Function vector
+        :param key: FeDamgard master key
+        :return: FeDamgard decryption key
+        """
         if len(y) != key.n:
             raise Exception(f"Function vector must be of length {key.n}")
         if not key.has_private_key():

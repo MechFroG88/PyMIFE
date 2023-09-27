@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "funcenc"
+name = "pymife"
 version = "0.0.1"
 authors = [
   { name="mechfrog88", email="kelzzin2@gmail.com" },

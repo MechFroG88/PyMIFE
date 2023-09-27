@@ -9,12 +9,27 @@ from src.mife.common import inner_product
 from src.mife.data.zmod_r import ZmodR
 from src.mife.data.matrix import Matrix
 
+# References:
 # https://eprint.iacr.org/2015/017.pdf
 
 
 class _FeLWE_MK:
     def __init__(self, p: int, q: int, l: int, n: int, m: int, delta: int, G: ZmodR,
                  A: Matrix, mpk: List[Matrix], msk: List[Matrix] = None):
+        """
+        Initialize FeLWE master key
+
+        :param p: Plaintext modulus
+        :param q: Ciphertext modulus
+        :param l: Dimension of vector
+        :param n: Dimension of the secret key
+        :param m: Number of vectors to choose from in subset sum
+        :param delta: round(q/p)
+        :param G: Ring Z_q
+        :param A: Random Matrix of size m x n
+        :param mpk: [(A * s[i].T).T + e[i] for i in range(l)]
+        :param msk: [Matrix([random_element_in_G for _ in range(n)]) for _ in range(l)]
+        """
         self.p = p
         self.q = q
         self.l = l
@@ -32,11 +47,23 @@ class _FeLWE_MK:
 
 class _FeLWE_SK:
     def __init__(self, y: List[int], sk: Matrix):
+        """
+        Initialize FeLWE decryption key
+
+        :param y: Function vector
+        :param sk: <msk, y>
+        """
         self.y = y
         self.sk = sk
 
 class _FeLWE_C:
     def __init__(self, a_r: Matrix, c: List[int]):
+        """
+        Initialize FeLWE cipher text
+
+        :param a_r: r * A
+        :param c: [<mpk[i], r> + x[i] * delta for i in range(l)]
+        """
         self.a_r = a_r
         self.c = c
 
@@ -44,6 +71,19 @@ class _FeLWE_C:
 class FeLWE:
     @staticmethod
     def generate(l: int, msg_bit: int, func_bit: int, n: int = 5) -> _FeLWE_MK:
+        """
+        Generate a FeLWE master key
+
+        Parameters referred from
+        https://eprint.iacr.org/2015/017.pdf
+        https://github.com/fentec-project/CiFEr/blob/master/src/innerprod/simple/lwe.c
+
+        :param l: Dimension of vector
+        :param msg_bit: Upperbound of bit-size for each element in the message vector
+        :param func_bit: Upperbound of bit-size for each element in the function vector
+        :param n: Dimension of the secret key
+        :return: FeLWE master key
+        """
         p = getPrime((msg_bit + func_bit) * 2 + l.bit_length() + 1)
         q = getPrime(p.bit_length() + n.bit_length() * 2 + (msg_bit + func_bit) + l.bit_length() // 2)
         G = ZmodR(q)
@@ -65,6 +105,13 @@ class FeLWE:
 
     @staticmethod
     def encrypt(x: List[int], pub: _FeLWE_MK) -> _FeLWE_C:
+        """
+        Encrypt FeLWE message vector
+
+        :param x: Message vector
+        :param pub: FeLWE public key
+        :return: FeLWE cipher text
+        """
         if len(x) != pub.l:
             raise Exception("Encrypt vector must be of length l")
 
@@ -80,6 +127,14 @@ class FeLWE:
 
     @staticmethod
     def decrypt(c: _FeLWE_C, pub: _FeLWE_MK, sk: _FeLWE_SK) -> int:
+        """
+        Decrypt FeLWE cipher text
+
+        :param c: FeLWE cipher text
+        :param pub: FeLWE public key
+        :param sk: FeLWE decryption key
+        :return: Decrypted message
+        """
         cul = pub.G(0)
         for i in range(pub.l):
             cul = cul + sk.y[i] * c.c[i]
@@ -91,6 +146,13 @@ class FeLWE:
 
     @staticmethod
     def keygen(y: List[int], key: _FeLWE_MK) -> _FeLWE_SK:
+        """
+        Generate FeLWE decryption key
+
+        :param y: Function vector
+        :param key: FeLWE master key
+        :return: FeLWE decryption key
+        """
         if len(y) != key.l:
             raise Exception(f"Function vector must be of length {key.l}")
         if not key.has_private_key():

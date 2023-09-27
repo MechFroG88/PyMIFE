@@ -19,6 +19,11 @@ class GroupBase(ABC):
 
     @abstractmethod
     def __call__(self, elem) -> GroupElem:
+        """
+        Convert an element to the group element
+
+        :param elem:
+        """
         pass
 
 
