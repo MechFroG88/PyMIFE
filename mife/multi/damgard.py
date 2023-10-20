@@ -90,6 +90,9 @@ class _FeDamgardMulti_MK:
     def has_private_key(self) -> bool:
         return self.msk is not None
 
+    def get_public_key(self):
+        return _FeDamgardMulti_MK(self.g, self.n, self.m, self.F, self.mpk)
+
 
 class _FeDamgardMulti_SK:
     def __init__(self, y: List[List[int]], d: List[Matrix], z: int):

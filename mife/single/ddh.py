@@ -29,6 +29,9 @@ class _FeDDH_MK:
     def has_private_key(self) -> bool:
         return self.msk is not None
 
+    def get_public_key(self):
+        return _FeDDH_MK(self.g, self.n, self.F, self.mpk)
+
 
 class _FeDDH_SK:
     def __init__(self, y: List[int], sk: int):

@@ -49,6 +49,9 @@ class _FeDDHMultiClient_MK:
     def has_private_key(self) -> bool:
         return self.msk is not None
 
+    def get_public_key(self):
+        return _FeDDHMultiClient_MK(self.g, self.n, self.m, self.F, self.hash)
+
 class _FeDDHMultiClient_EncK:
     def __init__(self, g: GroupElem,
                  hash: Callable[[bytes], Tuple[int, int]],

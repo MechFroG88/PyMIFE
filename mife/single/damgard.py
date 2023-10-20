@@ -32,6 +32,9 @@ class _FeDamgard_MK:
     def has_private_key(self) -> bool:
         return self.msk is not None
 
+    def get_public_key(self):
+        return _FeDamgard_MK(self.g, self.h, self.n, self.F, self.mpk)
+
 
 
 class _FeDamgard_SK:
