@@ -13,7 +13,7 @@ class TestFeDamgard(TestBase):
         key = FeDamgard.generate(n)
         c = FeDamgard.encrypt(x, key)
         sk = FeDamgard.keygen(y, key)
-        m = FeDamgard.decrypt(c, key, sk, (0, 1000))
+        m = FeDamgard.decrypt(c, key.get_public_key(), sk, (0, 1000))
         end = time.time()
 
         logging.info(f'FeDamgard test scheme 1 performance (n={n}): {end - start}s')
@@ -29,7 +29,7 @@ class TestFeDamgard(TestBase):
         key = FeDamgard.generate(n)
         c = FeDamgard.encrypt(x, key)
         sk = FeDamgard.keygen(y, key)
-        m = FeDamgard.decrypt(c, key, sk, (-100000, 100000))
+        m = FeDamgard.decrypt(c, key.get_public_key(), sk, (-100000, 100000))
         end = time.time()
 
         logging.info(f'FeDamgard test scheme 2 performance (n={n}): {end - start}s')
@@ -45,7 +45,7 @@ class TestFeDamgard(TestBase):
         key = FeDamgard.generate(n)
         c = FeDamgard.encrypt(x, key)
         sk = FeDamgard.keygen(y, key)
-        m = FeDamgard.decrypt(c, key, sk, (0, 1000000))
+        m = FeDamgard.decrypt(c, key.get_public_key(), sk, (0, 1000000))
         end = time.time()
 
         logging.info(f'FeDamgard test scheme 3 performance (n={n}): {end - start}s')

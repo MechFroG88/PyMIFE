@@ -17,7 +17,7 @@ class TestFeDamgardMulti(TestBase):
         key = FeDamgardMulti.generate(n, m)
         cs = [FeDamgardMulti.encrypt(x[i], key.get_enc_key(i)) for i in range(n)]
         sk = FeDamgardMulti.keygen(y, key)
-        m = FeDamgardMulti.decrypt(cs, key, sk, (0, 2000))
+        m = FeDamgardMulti.decrypt(cs, key.get_public_key(), sk, (0, 2000))
         end = time.time()
         logging.info(f'FeDamgardMulti test scheme 1 performance with Prime Group (n={n},m={m}): {end - start}s')
 
@@ -36,7 +36,7 @@ class TestFeDamgardMulti(TestBase):
         key = FeDamgardMulti.generate(n, m)
         cs = [FeDamgardMulti.encrypt(x[i], key.get_enc_key(i)) for i in range(n)]
         sk = FeDamgardMulti.keygen(y, key)
-        res = FeDamgardMulti.decrypt(cs, key, sk, (-10000000, 10000000))
+        res = FeDamgardMulti.decrypt(cs, key.get_public_key(), sk, (-10000000, 10000000))
         end = time.time()
 
         logging.info(f'FeDamgardMulti test scheme 2 performance with Prime Group (n={n},m={m}): {end - start}s')
@@ -56,7 +56,7 @@ class TestFeDamgardMulti(TestBase):
         key = FeDamgardMulti.generate(n, m)
         cs = [FeDamgardMulti.encrypt(x[i], key.get_enc_key(i)) for i in range(n)]
         sk = FeDamgardMulti.keygen(y, key)
-        res = FeDamgardMulti.decrypt(cs, key, sk, (-100000, 100000))
+        res = FeDamgardMulti.decrypt(cs, key.get_public_key(), sk, (-100000, 100000))
         end = time.time()
 
         logging.info(f'FeDamgardMulti test scheme 3 performance with Prime Group(n={n},m={m}): {end - start}s')
@@ -76,7 +76,7 @@ class TestFeDamgardMulti(TestBase):
         key = FeDamgardMulti.generate(n, m, Curve25519)
         cs = [FeDamgardMulti.encrypt(x[i], key.get_enc_key(i)) for i in range(n)]
         sk = FeDamgardMulti.keygen(y, key)
-        res = FeDamgardMulti.decrypt(cs, key, sk, (-10000000, 10000000))
+        res = FeDamgardMulti.decrypt(cs, key.get_public_key(), sk, (-10000000, 10000000))
         end = time.time()
 
         logging.info(f'FeDamgardMulti test scheme 4 performance with Curve25519 (n={n},m={m}): {end - start}s')

@@ -18,7 +18,7 @@ class TestFeDDHMultiClient(TestBase):
         key = FeDDHMultiClient.generate(n, m)
         cs = [FeDDHMultiClient.encrypt(x[i], tag, key.get_enc_key(i)) for i in range(n)]
         sk = FeDDHMultiClient.keygen(y, key)
-        m = FeDDHMultiClient.decrypt(cs, tag, key, sk, (0, 2000))
+        m = FeDDHMultiClient.decrypt(cs, tag, key.get_public_key(), sk, (0, 2000))
         end = time.time()
         logging.info(f'FeDDHMultiClient test scheme 1 performance with Prime Group (n={n},m={m}): {end - start}s')
 
@@ -38,7 +38,7 @@ class TestFeDDHMultiClient(TestBase):
         key = FeDDHMultiClient.generate(n, m)
         cs = [FeDDHMultiClient.encrypt(x[i], tag, key.get_enc_key(i)) for i in range(n)]
         sk = FeDDHMultiClient.keygen(y, key)
-        res = FeDDHMultiClient.decrypt(cs, tag, key, sk, (-10000000, 10000000))
+        res = FeDDHMultiClient.decrypt(cs, tag, key.get_public_key(), sk, (-10000000, 10000000))
         end = time.time()
 
         logging.info(f'FeDDHMultiClient test scheme 2 performance with Prime Group (n={n},m={m}): {end - start}s')
@@ -59,7 +59,7 @@ class TestFeDDHMultiClient(TestBase):
         key = FeDDHMultiClient.generate(n, m)
         cs = [FeDDHMultiClient.encrypt(x[i], tag, key.get_enc_key(i)) for i in range(n)]
         sk = FeDDHMultiClient.keygen(y, key)
-        res = FeDDHMultiClient.decrypt(cs, tag, key, sk, (-100000, 100000))
+        res = FeDDHMultiClient.decrypt(cs, tag, key.get_public_key(), sk, (-100000, 100000))
         end = time.time()
 
         logging.info(f'FeDDHMultiClient test scheme 3 performance with Prime Group (n={n},m={m}): {end - start}s')
@@ -80,7 +80,7 @@ class TestFeDDHMultiClient(TestBase):
         key = FeDDHMultiClient.generate(n, m, Curve25519)
         cs = [FeDDHMultiClient.encrypt(x[i], tag, key.get_enc_key(i)) for i in range(n)]
         sk = FeDDHMultiClient.keygen(y, key)
-        res = FeDDHMultiClient.decrypt(cs, tag, key, sk, (-10000000, 10000000))
+        res = FeDDHMultiClient.decrypt(cs, tag, key.get_public_key(), sk, (-10000000, 10000000))
         end = time.time()
 
         logging.info(f'FeDDHMultiClient test scheme 4 performance with Curve25519 (n={n},m={m}): {end - start}s')

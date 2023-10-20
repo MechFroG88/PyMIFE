@@ -15,7 +15,7 @@ class TestFeLWE(TestBase):
         key = FeLWE.generate(n, 4, 4)
         c = FeLWE.encrypt(x, key)
         sk = FeLWE.keygen(y, key)
-        m = FeLWE.decrypt(c, key, sk)
+        m = FeLWE.decrypt(c, key.get_public_key(), sk)
         end = time.time()
 
         logging.info(f'FeLWE test scheme 1 performance (n={n}): {end - start}s')
@@ -31,7 +31,7 @@ class TestFeLWE(TestBase):
         key = FeLWE.generate(n, 5, 5)
         c = FeLWE.encrypt(x, key)
         sk = FeLWE.keygen(y, key)
-        m = FeLWE.decrypt(c, key, sk)
+        m = FeLWE.decrypt(c, key.get_public_key(), sk)
         end = time.time()
 
         logging.info(f'FeDDH test scheme 2 performance (n={n}): {end - start}s')
@@ -47,7 +47,7 @@ class TestFeLWE(TestBase):
         key = FeLWE.generate(n, 7, 7)
         c = FeLWE.encrypt(x, key)
         sk = FeLWE.keygen(y, key)
-        m = FeLWE.decrypt(c, key, sk)
+        m = FeLWE.decrypt(c, key.get_public_key(), sk)
         end = time.time()
 
         logging.info(f'FeDamgard test scheme 3 performance (n={n}): {end - start}s')
@@ -63,7 +63,7 @@ class TestFeLWE(TestBase):
         key = FeLWE.generate(n, 5, 2)
         c = FeLWE.encrypt(x, key)
         sk = FeLWE.keygen(y, key)
-        m = FeLWE.decrypt(c, key, sk)
+        m = FeLWE.decrypt(c, key.get_public_key(), sk)
         end = time.time()
 
         logging.info(f'FeDamgard test scheme 3 performance (n={n}): {end - start}s')

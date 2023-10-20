@@ -40,7 +40,7 @@ y = [i + 10 for i in range(n)]
 key = FeDDH.generate(n)
 c = FeDDH.encrypt(x, key)
 sk = FeDDH.keygen(y, key)
-m = FeDDH.decrypt(c, key, sk, (0, 1000))
+m = FeDDH.decrypt(c, key.get_public_key(), sk, (0, 1000))
 ```
 
 #### LWE based scheme
@@ -54,7 +54,7 @@ y = [i for i in range(n)]
 key = FeLWE.generate(n, 4, 4)
 c = FeLWE.encrypt(x, key)
 sk = FeLWE.keygen(y, key)
-m = FeLWE.decrypt(c, key, sk) % key.p
+m = FeLWE.decrypt(c, key.get_public_key(), sk) % key.p
 ```
 
 #### Damgard based scheme
@@ -68,7 +68,7 @@ y = [i + 10 for i in range(n)]
 key = FeDamgard.generate(n)
 c = FeDamgard.encrypt(x, key)
 sk = FeDamgard.keygen(y, key)
-m = FeDamgard.decrypt(c, key, sk, (0, 1000))
+m = FeDamgard.decrypt(c, key.get_public_key(), sk, (0, 1000))
 ```
 
 ### Multi input inner product
@@ -85,7 +85,7 @@ y = [[i - j + 10 for j in range(m)] for i in range(n)]
 key = FeDamgardMulti.generate(n, m)
 cs = [FeDamgardMulti.encrypt(x[i], key.get_enc_key(i)) for i in range(n)]
 sk = FeDamgardMulti.keygen(y, key)
-m = FeDamgardMulti.decrypt(cs, key, sk, (0, 2000))
+m = FeDamgardMulti.decrypt(cs, key.get_public_key(), sk, (0, 2000))
 ```
 
 Using Curve25519
@@ -101,7 +101,7 @@ y = [[i - j - 5 for j in range(m)] for i in range(n)]
 key = FeDamgardMulti.generate(n, m, Curve25519)
 cs = [FeDamgardMulti.encrypt(x[i], key.get_enc_key(i)) for i in range(n)]
 sk = FeDamgardMulti.keygen(y, key)
-res = FeDamgardMulti.decrypt(cs, key, sk, (-10000000, 10000000))
+res = FeDamgardMulti.decrypt(cs, key.get_public_key(), sk, (-10000000, 10000000))
 ```
 
 ### Multi client inner product
@@ -119,7 +119,7 @@ tag = b"testingtag123"
 key = FeDDHMultiClient.generate(n, m)
 cs = [FeDDHMultiClient.encrypt(x[i], tag, key.get_enc_key(i)) for i in range(n)]
 sk = FeDDHMultiClient.keygen(y, key)
-m = FeDDHMultiClient.decrypt(cs, tag, key, sk, (0, 2000))
+m = FeDDHMultiClient.decrypt(cs, tag, key.get_public_key(), sk, (0, 2000))
 ```
 
 ## Customize

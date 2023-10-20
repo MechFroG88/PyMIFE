@@ -15,7 +15,7 @@ class TestFeDDH(TestBase):
         key = FeDDH.generate(n)
         c = FeDDH.encrypt(x, key)
         sk = FeDDH.keygen(y, key)
-        m = FeDDH.decrypt(c, key, sk, (0, 1000))
+        m = FeDDH.decrypt(c, key.get_public_key(), sk, (0, 1000))
         end = time.time()
 
         logging.info(f'FeDDH test scheme 1 performance (n={n}): {end - start}s')
@@ -31,7 +31,7 @@ class TestFeDDH(TestBase):
         key = FeDDH.generate(n)
         c = FeDDH.encrypt(x, key)
         sk = FeDDH.keygen(y, key)
-        m = FeDDH.decrypt(c, key, sk, (-100000, 100000))
+        m = FeDDH.decrypt(c, key.get_public_key(), sk, (-100000, 100000))
         end = time.time()
 
         logging.info(f'FeDDH test scheme 2 performance (n={n}): {end - start}s')
@@ -47,7 +47,7 @@ class TestFeDDH(TestBase):
         key = FeDDH.generate(n)
         c = FeDDH.encrypt(x, key)
         sk = FeDDH.keygen(y, key)
-        m = FeDDH.decrypt(c, key, sk, (0, 200000))
+        m = FeDDH.decrypt(c, key.get_public_key(), sk, (0, 200000))
         end = time.time()
 
         logging.info(f'FeDamgard test scheme 3 performance (n={n}): {end - start}s')
