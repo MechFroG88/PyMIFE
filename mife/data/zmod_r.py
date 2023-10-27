@@ -19,6 +19,12 @@ class ZmodR():
     def __str__(self) -> str:
         return f"Multiplicative Group of integer modulo {self.modulus}"
 
+    def export(self) -> dict:
+        return {
+            "type": "Zmod",
+            "modulus": self.modulus
+        }
+
     def identity(self) -> _ZmodRElem:
         return _ZmodRElem(self, mpz(0))
 

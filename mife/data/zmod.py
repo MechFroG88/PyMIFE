@@ -3,7 +3,7 @@ from __future__ import annotations
 import secrets
 
 from mife.data.group import GroupBase, GroupElem
-from typing import Self
+from typing import Self, TypedDict
 from gmpy2 import powmod, gcd, invert, mpz
 from Crypto.Util.number import isPrime
 
@@ -40,6 +40,12 @@ class Zmod(GroupBase):
     def identity(self) -> _ZmodElem:
         return _ZmodElem(self, mpz(1))
 
+    def export(self) -> dict:
+        return {
+            "type": "Zmod",
+            "modulus": self.modulus
+        }
+
 
 class _ZmodElem(GroupElem):
 
@@ -65,4 +71,9 @@ class _ZmodElem(GroupElem):
         return hash(self.val)
 
     def __str__(self):
-        return str(self.val)
+        return f"{self.val} in Multiplicative Group of integer modulo {self.group.modulus}"
+
+    def export(self) -> dict:
+        return {
+            "val": self.val
+        }

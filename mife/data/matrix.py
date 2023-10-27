@@ -21,6 +21,20 @@ class Matrix:
     def isVector(self):
         return self.n == 1 or self.m == 1
 
+    @staticmethod
+    def hasExport(elem):
+        return hasattr(elem, "export") and callable(elem.export)
+
+    def export(self) -> dict:
+        return {
+            "n": self.n,
+            "m": self.m,
+            "M": [
+                [self.M[i][j].export() if self.hasExport(self.M[i][j]) else str(self.M[i][j]) for j in range(self.m)]
+                for i in range(self.n)
+            ]
+        }
+
     def __init__(self, M: List[List[Any] | Any]):
         if len(M) == 0:
             raise Exception("Matrix can't be size 0x0")

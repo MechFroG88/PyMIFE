@@ -47,6 +47,20 @@ class _FeLWE_MK:
     def get_public_key(self):
         return _FeLWE_MK(self.p, self.q, self.l, self.n, self.m, self.delta, self.G, self.A, self.mpk)
 
+    def export(self):
+        return {
+            "p": self.p,
+            "q": self.q,
+            "l": self.l,
+            "n": self.n,
+            "m": self.m,
+            "delta": self.delta,
+            "G": self.G.export(),
+            "A": self.A.export(),
+            "mpk": [x.export() for x in self.mpk],
+            "msk": [x.export() for x in self.msk] if self.msk is not None else None
+        }
+
 
 class _FeLWE_SK:
     def __init__(self, y: List[int], sk: Matrix):
@@ -59,6 +73,12 @@ class _FeLWE_SK:
         self.y = y
         self.sk = sk
 
+    def export(self):
+        return {
+            "y": self.y,
+            "sk": self.sk.export()
+        }
+
 class _FeLWE_C:
     def __init__(self, a_r: Matrix, c: List[int]):
         """
@@ -69,6 +89,12 @@ class _FeLWE_C:
         """
         self.a_r = a_r
         self.c = c
+
+    def export(self):
+        return {
+            "a_r": self.a_r.export(),
+            "c": self.c
+        }
 
 
 class FeLWE:

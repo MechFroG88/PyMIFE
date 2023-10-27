@@ -7,6 +7,17 @@ from mife.single.lwe import FeLWE
 
 class TestFeLWE(TestBase):
 
+    def test_export(self):
+        n = 10
+        x = [i for i in range(n)]
+        key = FeLWE.generate(n, 4, 4)
+        c = FeLWE.encrypt(x, key)
+        sk = FeLWE.keygen(x, key)
+        key.export()
+        c.export()
+        sk.export()
+        key.get_public_key().export()
+
     def test_scheme_1(self):
         start = time.time()
         n = 10

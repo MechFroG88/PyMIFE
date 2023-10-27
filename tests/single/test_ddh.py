@@ -7,6 +7,17 @@ from mife.single.ddh import FeDDH
 
 class TestFeDDH(TestBase):
 
+    def test_export(self):
+        n = 10
+        x = [i for i in range(n)]
+        key = FeDDH.generate(n)
+        c = FeDDH.encrypt(x, key)
+        sk = FeDDH.keygen(x, key)
+        key.export()
+        c.export()
+        sk.export()
+        key.get_public_key().export()
+
     def test_scheme_1(self):
         start = time.time()
         n = 10

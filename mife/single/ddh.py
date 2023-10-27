@@ -32,6 +32,15 @@ class _FeDDH_MK:
     def get_public_key(self):
         return _FeDDH_MK(self.g, self.n, self.F, self.mpk)
 
+    def export(self):
+        return {
+            "g": self.g.export(),
+            "n": self.n,
+            "F": self.F.export(),
+            "mpk": [x.export() for x in self.mpk],
+            "msk": self.msk
+        }
+
 
 class _FeDDH_SK:
     def __init__(self, y: List[int], sk: int):
@@ -44,6 +53,12 @@ class _FeDDH_SK:
         self.y = y
         self.sk = sk
 
+    def export(self):
+        return {
+            "y": self.y,
+            "sk": self.sk
+        }
+
 class _FeDDH_C:
     def __init__(self, g_r: GroupElem, c: List[GroupElem]):
         """
@@ -54,6 +69,12 @@ class _FeDDH_C:
         """
         self.g_r = g_r
         self.c = c
+
+    def export(self):
+        return {
+            "g_r": self.g_r.export(),
+            "c": [x.export() for x in self.c]
+        }
 
 
 class FeDDH:

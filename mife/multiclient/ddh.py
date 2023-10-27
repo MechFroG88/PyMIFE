@@ -52,6 +52,15 @@ class _FeDDHMultiClient_MK:
     def get_public_key(self):
         return _FeDDHMultiClient_MK(self.g, self.n, self.m, self.F, self.hash)
 
+    def export(self):
+        return {
+            "g": self.g.export(),
+            "n": self.n,
+            "m": self.m,
+            "F": self.F.export(),
+            "msk": self.msk
+        }
+
 class _FeDDHMultiClient_EncK:
     def __init__(self, g: GroupElem,
                  hash: Callable[[bytes], Tuple[int, int]],
@@ -67,6 +76,12 @@ class _FeDDHMultiClient_EncK:
         self.hash = hash
         self.enc_key = enc_key
 
+    def export(self):
+        return {
+            "g": self.g.export(),
+            "enc_key": self.enc_key
+        }
+
 
 class _FeDDHMultiClient_SK:
     def __init__(self, y: List[List[int]], d: Tuple[int, int]):
@@ -79,6 +94,12 @@ class _FeDDHMultiClient_SK:
         self.y = y
         self.d = d
 
+    def export(self):
+        return {
+            "y": self.y,
+            "d": self.d
+        }
+
 class _FeDDHMultiClient_C:
     def __init__(self, c: List[GroupElem]):
         """
@@ -87,6 +108,11 @@ class _FeDDHMultiClient_C:
         :param c: (<h(tag), s[i]> + x[i]) * g
         """
         self.c = c
+
+    def export(self):
+        return {
+            "c": [x.export() for x in self.c]
+        }
 
 class FeDDHMultiClient:
 

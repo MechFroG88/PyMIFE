@@ -24,6 +24,12 @@ class _FeDamgardMulti_MPK:
         self.a = a
         self.wa = wa
 
+    def export(self):
+        return {
+            "a": self.a.export(),
+            "wa": self.wa.export()
+        }
+
 
 class _FeDamgardMulti_MSK:
 
@@ -36,6 +42,12 @@ class _FeDamgardMulti_MSK:
         """
         self.w = w
         self.u = u
+
+    def export(self):
+        return {
+            "w": self.w.export(),
+            "u": self.u.export()
+        }
 
 class _FeDamgardMulti_EncK:
     def __init__(self, g: GroupElem, F: GroupBase, mpk: _FeDamgardMulti_MPK, u: Matrix):
@@ -51,6 +63,15 @@ class _FeDamgardMulti_EncK:
         self.F = F
         self.mpk = mpk
         self.u = u
+
+    def export(self):
+        return {
+            "g": self.g.export(),
+            "F": self.F.export(),
+            "mpk": self.mpk.export(),
+            "u": self.u.export()
+        }
+
 
 
 class _FeDamgardMulti_MK:
@@ -93,6 +114,16 @@ class _FeDamgardMulti_MK:
     def get_public_key(self):
         return _FeDamgardMulti_MK(self.g, self.n, self.m, self.F, self.mpk)
 
+    def export(self):
+        return {
+            "g": self.g.export(),
+            "n": self.n,
+            "m": self.m,
+            "F": self.F.export(),
+            "mpk": self.mpk.export(),
+            "msk": self.msk.export() if self.msk is not None else None
+        }
+
 
 class _FeDamgardMulti_SK:
     def __init__(self, y: List[List[int]], d: List[Matrix], z: int):
@@ -107,6 +138,13 @@ class _FeDamgardMulti_SK:
         self.d = d
         self.z = z
 
+    def export(self):
+        return {
+            "y": self.y,
+            "d": [x.export() for x in self.d],
+            "z": self.z
+        }
+
 
 class _FeDamgardMulti_C:
     def __init__(self, t: Matrix, c: Matrix):
@@ -118,6 +156,12 @@ class _FeDamgardMulti_C:
         """
         self.t = t
         self.c = c
+
+    def export(self):
+        return {
+            "t": self.t.export(),
+            "c": self.c.export()
+        }
 
 
 class FeDamgardMulti:

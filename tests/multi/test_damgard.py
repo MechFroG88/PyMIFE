@@ -10,6 +10,20 @@ from fastecdsa.curve import P192
 class TestFeDamgardMulti(TestBase):
     logging.getLogger().setLevel(logging.INFO)
 
+    def test_export(self):
+        n = 3
+        m = 5
+        x = [[i + j for j in range(m)] for i in range(n)]
+        y = [[i - j + 10 for j in range(m)] for i in range(n)]
+        key = FeDamgardMulti.generate(n, m)
+        cs = [FeDamgardMulti.encrypt(x[i], key.get_enc_key(i)) for i in range(n)]
+        sk = FeDamgardMulti.keygen(y, key)
+        key.export()
+        [cs[i].export() for i in range(n)]
+        sk.export()
+        key.get_public_key().export()
+
+
     def test_scheme_1(self):
         start = time.time()
         n = 3
@@ -108,4 +122,5 @@ class TestFeDamgardMulti(TestBase):
             expected += sum([a * b for a, b in zip(x[i], y[i])])
 
         self.assertEqual(expected, res)
+
 

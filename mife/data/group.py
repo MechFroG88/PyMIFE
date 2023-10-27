@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-
 class GroupBase(ABC):
 
     @abstractmethod
@@ -15,6 +14,11 @@ class GroupBase(ABC):
 
     @abstractmethod
     def generator(self) -> GroupElem:
+        pass
+
+    @abstractmethod
+    def export(self) -> dict:
+        # Export the group object details as dictionary for export
         pass
 
 
@@ -46,3 +50,8 @@ class GroupElem(ABC):
 
     def __sub__(self, other):
         return self.__add__(other.__neg__())
+
+    @abstractmethod
+    def export(self) -> dict:
+        # Export the group object details as dictionary for export
+        pass

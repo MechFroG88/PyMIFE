@@ -11,7 +11,7 @@ from mife.data.group import GroupBase, GroupElem
 
 class _FeDamgard_MK:
     def __init__(self, g: GroupElem, h: GroupElem, n: int, F: GroupBase,
-                 mpk: List[Tuple], msk: List[Tuple[int, int]] = None):
+                 mpk: List[GroupElem], msk: List[Tuple[int, int]] = None):
         """
         Initialize FeDamgard master key
 
@@ -35,7 +35,15 @@ class _FeDamgard_MK:
     def get_public_key(self):
         return _FeDamgard_MK(self.g, self.h, self.n, self.F, self.mpk)
 
-
+    def export(self):
+        return {
+            "g": self.g.export(),
+            "h": self.h.export(),
+            "n": self.n,
+            "F": self.F.export(),
+            "mpk": [x.export() for x in self.mpk],
+            "msk": self.msk
+        }
 
 class _FeDamgard_SK:
     def __init__(self, y: List[int], sx: int, tx: int):
@@ -50,6 +58,13 @@ class _FeDamgard_SK:
         self.sx = sx
         self.tx = tx
 
+    def export(self):
+        return {
+            "y": self.y,
+            "sx": self.sx,
+            "tx": self.tx
+        }
+
 
 class _FeDamgard_C:
     def __init__(self, g_r: GroupElem, h_r: GroupElem, c: List[GroupElem]):
@@ -63,6 +78,13 @@ class _FeDamgard_C:
         self.g_r = g_r
         self.h_r = h_r
         self.c = c
+
+    def export(self):
+        return {
+            "g_r": self.g_r.export(),
+            "h_r": self.h_r.export(),
+            "c": [x.export() for x in self.c]
+        }
 
 
 class FeDamgard:

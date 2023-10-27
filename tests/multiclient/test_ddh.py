@@ -10,6 +10,20 @@ from fastecdsa.curve import P256
 class TestFeDDHMultiClient(TestBase):
     logging.getLogger().setLevel(logging.INFO)
 
+    def test_export(self):
+        n = 3
+        m = 5
+        x = [[i + j for j in range(m)] for i in range(n)]
+        y = [[i - j + 10 for j in range(m)] for i in range(n)]
+        tag = b"testingtag123"
+        key = FeDDHMultiClient.generate(n, m)
+        cs = [FeDDHMultiClient.encrypt(x[i], tag, key.get_enc_key(i)) for i in range(n)]
+        sk = FeDDHMultiClient.keygen(y, key)
+        key.export()
+        [cs[i].export() for i in range(n)]
+        sk.export()
+        key.get_public_key().export()
+
     def test_scheme_1(self):
         start = time.time()
         n = 3

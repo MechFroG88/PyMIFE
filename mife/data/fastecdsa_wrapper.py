@@ -16,6 +16,11 @@ class WrapCurve(GroupBase):
     def generator(self) -> GroupElem:
         return WrapPoint(self.curve.G)
 
+    def export(self) -> dict:
+        return {
+            "type": self.curve.name,
+        }
+
 class WrapPoint(GroupElem):
 
     def __init__(self, point: Point):
@@ -35,3 +40,9 @@ class WrapPoint(GroupElem):
 
     def __hash__(self):
         return hash(str(self.point.x) + "," + str(self.point.y))
+
+    def export(self) -> dict:
+        return {
+            "x": self.point.x,
+            "y": self.point.y,
+        }

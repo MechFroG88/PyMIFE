@@ -33,6 +33,11 @@ class Curve25519(GroupBase):
     def identity() -> _Curve25519Elem:
         return _Curve25519Elem(0, 1, 0)
 
+    def export(self) -> dict:
+        return {
+            "type": "Curve25519"
+        }
+
 
 class _Curve25519Elem(GroupElem):
     doubleConst = (Curve25519.a + 2) // 4
@@ -144,3 +149,11 @@ class _Curve25519Elem(GroupElem):
     def __str__(self):
         self._normalize()
         return f'({self.x}:{self.y}:{self.z})'
+
+    def export(self) -> dict:
+        return {
+            "x": self.x,
+            "y": self.y,
+            "z": self.z
+        }
+
