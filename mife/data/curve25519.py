@@ -6,11 +6,11 @@ from gmpy2 import invert, mpz
 
 
 class Curve25519(GroupBase):
-    p = 0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffed
-    a = 0x76d06
-    b = 0x01
-    g = (0x09, 0x20ae19a1b8a086b4e01edd2c7748d14c923d4d7e6d7c61b229e9c5a27eced3d9)
-    _order = 0x1000000000000000000000000000000014def9dea2f79cd65812631a5cf5d3ed
+    p = mpz(0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffed)
+    a = mpz(0x76d06)
+    b = mpz(0x01)
+    g = (mpz(0x09), mpz(0x20ae19a1b8a086b4e01edd2c7748d14c923d4d7e6d7c61b229e9c5a27eced3d9))
+    _order = mpz(0x1000000000000000000000000000000014def9dea2f79cd65812631a5cf5d3ed)
 
     def __call__(self, elem: List[int]) -> _Curve25519Elem:
         return _Curve25519Elem(self, *elem)
@@ -121,11 +121,6 @@ class _Curve25519Elem(GroupElem):
         y = (y * invert(2 * Curve25519.b * diff.y, Curve25519.p)) % Curve25519.p
 
         return _Curve25519Elem(x, y)
-
-    def __mul__(self, other):
-        if isinstance(other, int) or isinstance(other, mpz):
-            return self.__rmul__(other)
-        raise f"Unsupported multiplication between {type(self)}, {type(other)}"
 
     def power(self, x):
         x = x % Curve25519.order()

@@ -41,7 +41,7 @@ class TestFeDDH(TestBase):
 
     def test_scheme_3(self):
         start = time.time()
-        n = 1000
+        n = 10000
         x = [1 for i in range(n)]
         y = [1 for i in range(n)]
         key = FeDDH.generate(n)

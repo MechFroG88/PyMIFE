@@ -22,7 +22,7 @@ pip install pymife
 1. (Adaptive Secure with Random Oracle) DDH based scheme from https://eprint.iacr.org/2017/989.pdf
 
 ## Note
-- The implementation of these schemes are not fully optimized, recommended to use for research / testing purpose.
+- The implementation of these schemes are not fully optimized and not peer-reviewed, recommended to only use for research / testing purpose.
 - More schemes will be added in the future
 
 ## Usage
@@ -103,6 +103,24 @@ cs = [FeDamgardMulti.encrypt(x[i], key.get_enc_key(i)) for i in range(n)]
 sk = FeDamgardMulti.keygen(y, key)
 res = FeDamgardMulti.decrypt(cs, key.get_public_key(), sk, (-10000000, 10000000))
 ```
+
+Using P256 from fastecdsa
+
+```python
+from mife.multi.damgard import FeDamgardMulti
+from mife.data.fastecdsa_wrapper import WrapCurve
+from fastecdsa.curve import P256
+
+n = 25
+m = 25
+x = [[i * 10 + j for j in range(m)] for i in range(n)]
+y = [[i - j - 5 for j in range(m)] for i in range(n)]
+key = FeDamgardMulti.generate(n, m, WrapCurve(P256))
+cs = [FeDamgardMulti.encrypt(x[i], key.get_enc_key(i)) for i in range(n)]
+sk = FeDamgardMulti.keygen(y, key)
+res = FeDamgardMulti.decrypt(cs, key.get_public_key(), sk, (-10000000, 10000000))
+```
+
 
 ### Multi client inner product
 

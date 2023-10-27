@@ -17,15 +17,6 @@ class GroupBase(ABC):
     def generator(self) -> GroupElem:
         pass
 
-    @abstractmethod
-    def __call__(self, elem) -> GroupElem:
-        """
-        Convert an element to the group element
-
-        :param elem:
-        """
-        pass
-
 
 class GroupElem(ABC):
     @abstractmethod
@@ -39,6 +30,11 @@ class GroupElem(ABC):
     @abstractmethod
     def __rmul__(self, other):
         pass
+
+    def __mul__(self, other):
+        if isinstance(other, int) or isinstance(other, mpz):
+            return self.__rmul__(other)
+        raise f"Unsupported multiplication between {type(self)}, {type(other)}"
 
     @abstractmethod
     def __eq__(self, other):
