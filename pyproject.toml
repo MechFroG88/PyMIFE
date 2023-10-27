@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pymife"
-version = "0.0.7"
+version = "0.0.8"
 authors = [
   { name="mechfrog88", email="kelzzin2@gmail.com" },
 ]
 dependencies = [
     'pycryptodome >= 3.18.0',
-    'gmpy2 >= 2.1.5',
+    'gmpy2 == 2.1.5',
     'fastecdsa >= 2.3.0'
 ]
 description = "Python Functional Encryption Library"
