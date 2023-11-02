@@ -93,7 +93,7 @@ class _FeLWE_C:
     def export(self):
         return {
             "a_r": self.a_r.export(),
-            "c": self.c
+            "c": [int(i) for i in self.c]
         }
 
 

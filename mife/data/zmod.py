@@ -43,7 +43,7 @@ class Zmod(GroupBase):
     def export(self) -> dict:
         return {
             "type": "Zmod",
-            "modulus": self.modulus
+            "modulus": int(self.modulus)
         }
 
 
@@ -75,5 +75,5 @@ class _ZmodElem(GroupElem):
 
     def export(self) -> dict:
         return {
-            "val": self.val
+            "val": int(self.val)
         }

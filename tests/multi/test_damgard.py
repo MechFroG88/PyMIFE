@@ -5,6 +5,7 @@ from mife.multi.damgard import FeDamgardMulti
 from mife.data.curve25519 import Curve25519
 from mife.data.fastecdsa_wrapper import WrapCurve
 from fastecdsa.curve import P192
+import json
 
 
 class TestFeDamgardMulti(TestBase):
@@ -18,10 +19,10 @@ class TestFeDamgardMulti(TestBase):
         key = FeDamgardMulti.generate(n, m)
         cs = [FeDamgardMulti.encrypt(x[i], key.get_enc_key(i)) for i in range(n)]
         sk = FeDamgardMulti.keygen(y, key)
-        key.export()
-        [cs[i].export() for i in range(n)]
-        sk.export()
-        key.get_public_key().export()
+        json.dumps(key.export())
+        [json.dumps(cs[i].export()) for i in range(n)]
+        json.dumps(sk.export())
+        json.dumps(key.get_public_key().export())
 
 
     def test_scheme_1(self):

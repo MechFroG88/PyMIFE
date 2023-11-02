@@ -8,13 +8,41 @@ from mife.data.group import GroupBase, GroupElem
 from mife.data.zmod import Zmod
 
 from hashlib import shake_256
+from abc import ABC, abstractmethod
+
 
 # References:
 # https://eprint.iacr.org/2017/989.pdf
 
+class _FeDDHMultiClient_Hash(ABC):
+    @abstractmethod
+    def __call__(self, tag: bytes) -> Tuple[int, int]:
+        pass
+
+    @abstractmethod
+    def export(self) -> dict:
+        pass
+
+
+class _FeDDHMultiClient_Hash_Default(_FeDDHMultiClient_Hash):
+
+    def __init__(self, maximum_bit: int):
+        self.maximum_bit = maximum_bit
+
+    def __call__(self, tag: bytes) -> Tuple[int, int]:
+        t = shake_256(tag).digest(self.maximum_bit * 2)
+        return bytes_to_long(t[:len(t) // 2]), bytes_to_long(t[len(t) // 2:])
+
+    def export(self) -> dict:
+        return {
+            "type": "default",
+            "maximum_bit": self.maximum_bit
+        }
+
+
 class _FeDDHMultiClient_MK:
     def __init__(self, g: GroupElem, n: int, m: int, F: GroupBase,
-                 hash: Callable[[bytes], Tuple[int, int]],
+                 hash: _FeDDHMultiClient_Hash,
                  msk: List[List[Tuple[int, int]]] = None):
         """
         Initialize FeDDHMultiClient master key
@@ -58,12 +86,14 @@ class _FeDDHMultiClient_MK:
             "n": self.n,
             "m": self.m,
             "F": self.F.export(),
-            "msk": self.msk
+            "hash": self.hash.export(),
+            "msk": [[[int(vec2[0]), int(vec2[1])] for vec2 in vec] for vec in self.msk] if self.msk is not None else None
         }
+
 
 class _FeDDHMultiClient_EncK:
     def __init__(self, g: GroupElem,
-                 hash: Callable[[bytes], Tuple[int, int]],
+                 hash: _FeDDHMultiClient_Hash,
                  enc_key: List[Tuple[int, int]]):
         """
         Initialize FeDDHMultiClient encryption key
@@ -79,6 +109,7 @@ class _FeDDHMultiClient_EncK:
     def export(self):
         return {
             "g": self.g.export(),
+            "hash": self.hash.export(),
             "enc_key": self.enc_key
         }
 
@@ -100,33 +131,25 @@ class _FeDDHMultiClient_SK:
             "d": self.d
         }
 
+
 class _FeDDHMultiClient_C:
-    def __init__(self, c: List[GroupElem]):
+    def __init__(self, tag: bytes, c: List[GroupElem]):
         """
         Initialize FeDDHMultiClient cipher text
 
         :param c: (<h(tag), s[i]> + x[i]) * g
         """
         self.c = c
+        self.tag = tag
 
     def export(self):
         return {
+            "tag": self.tag.hex(),
             "c": [x.export() for x in self.c]
         }
 
+
 class FeDDHMultiClient:
-
-    @staticmethod
-    def default_hash(tag: bytes, maximum_bit: int) -> Tuple[int, int]:
-        """
-        Default hash H : tag -> Z_p x Z_p with shake_256
-
-        :param tag:
-        :param maximum_bit:
-        :return: (u1, u2) with u1, u2 < 2^maximum_bit
-        """
-        t = shake_256(tag).digest(maximum_bit * 2)
-        return bytes_to_long(t[:len(t)//2]), bytes_to_long(t[len(t)//2:])
 
     @staticmethod
     def generate(n: int, m: int, F: GroupBase = None,
@@ -143,7 +166,7 @@ class FeDDHMultiClient:
         if F is None:
             F = Zmod(getStrongPrime(1024))
         if hash is None:
-            hash = lambda x: FeDDHMultiClient.default_hash(x, F.order().bit_length())
+            hash = _FeDDHMultiClient_Hash_Default(F.order().bit_length())
 
         g = F.generator()
         s = [[(randbelow(F.order()), randbelow(F.order())) for _ in range(m)] for _ in range(n)]
@@ -171,7 +194,7 @@ class FeDDHMultiClient:
             s1, s2 = key.enc_key[i]
             c.append((u1 * s1 + u2 * s2 + x[i]) * key.g)
 
-        return _FeDDHMultiClient_C(c)
+        return _FeDDHMultiClient_C(tag, c)
 
     @staticmethod
     def decrypt(c: List[_FeDDHMultiClient_C], tag: bytes,

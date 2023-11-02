@@ -140,7 +140,7 @@ class _FeDamgardMulti_SK:
 
     def export(self):
         return {
-            "y": self.y,
+            "y": [[int(i) for i in vec] for vec in self.y],
             "d": [x.export() for x in self.d],
             "z": self.z
         }

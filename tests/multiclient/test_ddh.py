@@ -5,6 +5,7 @@ from mife.multiclient.ddh import FeDDHMultiClient
 from mife.data.curve25519 import Curve25519
 from mife.data.fastecdsa_wrapper import WrapCurve
 from fastecdsa.curve import P256
+import json
 
 
 class TestFeDDHMultiClient(TestBase):
@@ -19,10 +20,11 @@ class TestFeDDHMultiClient(TestBase):
         key = FeDDHMultiClient.generate(n, m)
         cs = [FeDDHMultiClient.encrypt(x[i], tag, key.get_enc_key(i)) for i in range(n)]
         sk = FeDDHMultiClient.keygen(y, key)
-        key.export()
-        [cs[i].export() for i in range(n)]
-        sk.export()
-        key.get_public_key().export()
+        json.dumps([key.get_enc_key(i).export() for i in range(n)])
+        json.dumps(key.export())
+        [json.dumps(cs[i].export()) for i in range(n)]
+        json.dumps(sk.export())
+        json.dumps(key.get_public_key().export())
 
     def test_scheme_1(self):
         start = time.time()

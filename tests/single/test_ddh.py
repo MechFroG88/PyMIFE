@@ -1,5 +1,6 @@
 import time
 import logging
+import json
 
 from tests.test_base import TestBase
 from mife.single.ddh import FeDDH
@@ -13,10 +14,10 @@ class TestFeDDH(TestBase):
         key = FeDDH.generate(n)
         c = FeDDH.encrypt(x, key)
         sk = FeDDH.keygen(x, key)
-        key.export()
-        c.export()
-        sk.export()
-        key.get_public_key().export()
+        json.dumps(key.export())
+        json.dumps(c.export())
+        json.dumps(sk.export())
+        json.dumps(key.get_public_key().export())
 
     def test_scheme_1(self):
         start = time.time()

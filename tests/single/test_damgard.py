@@ -2,6 +2,7 @@ import time
 import logging
 from tests.test_base import TestBase
 from mife.single.damgard import FeDamgard
+import json
 
 
 class TestFeDamgard(TestBase):
@@ -12,10 +13,10 @@ class TestFeDamgard(TestBase):
         key = FeDamgard.generate(n)
         c = FeDamgard.encrypt(x, key)
         sk = FeDamgard.keygen(x, key)
-        key.export()
-        c.export()
-        sk.export()
-        key.get_public_key().export()
+        json.dumps(key.export())
+        json.dumps(c.export())
+        json.dumps(sk.export())
+        json.dumps(key.get_public_key().export())
 
     def test_scheme_1(self):
         start = time.time()
