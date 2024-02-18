@@ -5,7 +5,6 @@ from Crypto.Util.number import getStrongPrime
 from secrets import randbelow
 from gmpy2 import powmod
 
-
 class TestPow(TestBase):
 
     def test_pow(self):
