@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 packages = ["pymife"]
 
 [project.optional-dependencies]
-test = [
+extragroup = [
   "py_ecc >= 7.0.0",
   "fastecdsa >= 2.3.0"
 ]
