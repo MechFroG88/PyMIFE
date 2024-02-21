@@ -32,7 +32,7 @@ pip install pymife
 #### DDH based scheme
 
 ```python
-from mife.single.ddh import FeDDH
+from mife.single.selective.ddh import FeDDH
 
 n = 10
 x = [i for i in range(n)]
@@ -46,7 +46,7 @@ m = FeDDH.decrypt(c, key.get_public_key(), sk, (0, 1000))
 #### LWE based scheme
 
 ```python
-from mife.single.lwe import FeLWE
+from mife.single.selective.lwe import FeLWE
 
 n = 10
 x = [i - 10 for i in range(n)]
@@ -141,8 +141,6 @@ m = FeDDHMultiClient.decrypt(cs, tag, key.get_public_key(), sk, (0, 2000))
 ```
 
 ##### Export Keys
-
-For v0.0.8 and above
 
 ```python
 from mife.multiclient.ddh import FeDDHMultiClient

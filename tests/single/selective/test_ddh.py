@@ -3,7 +3,7 @@ import logging
 import json
 
 from tests.test_base import TestBase
-from mife.single.ddh import FeDDH
+from mife.single.selective.ddh import FeDDH
 
 
 class TestFeDDH(TestBase):
@@ -62,7 +62,7 @@ class TestFeDDH(TestBase):
         m = FeDDH.decrypt(c, key.get_public_key(), sk, (0, 200000))
         end = time.time()
 
-        logging.info(f'FeDamgard test scheme 3 performance (n={n}): {end - start}s')
+        logging.info(f'FeDDH test scheme 3 performance (n={n}): {end - start}s')
 
         expected = sum([a * b for a, b in zip(x, y)])
         self.assertEqual(expected, m)
