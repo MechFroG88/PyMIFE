@@ -1,7 +1,7 @@
 import time
 import logging
 from tests.test_base import TestBase
-from mife.multiclient.ddh import FeDDHMultiClient
+from mife.multiclient.rom.ddh import FeDDHMultiClient
 from mife.data.curve25519 import Curve25519
 from mife.data.fastecdsa_wrapper import WrapCurve
 from fastecdsa.curve import P256

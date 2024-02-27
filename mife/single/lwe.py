@@ -15,9 +15,6 @@ from numpy import array as Matrix
 class _FeLWE_MK:
     def __init__(self, l: int, msg_bit: int, func_bit: int, k: int, n: int, m: int, q: int, U: Matrix, A: Matrix,
                  alpha: float, Z: Matrix = None):
-        """
-        Initialize FeLWE master key
-        """
         self.l = l
         self.msg_bit = msg_bit
         self.func_bit = func_bit
@@ -102,13 +99,6 @@ class FeLWE:
 
     @staticmethod
     def encrypt(x: List[int], pub: _FeLWE_MK) -> _FeLWE_C:
-        """
-        Encrypt FeLWE message vector
-
-        :param x: Message vector
-        :param pub: FeLWE public key
-        :return: FeLWE cipher text
-        """
         if len(x) != pub.l:
             raise Exception("Encrypt vector must be of length l")
 
@@ -125,14 +115,6 @@ class FeLWE:
 
     @staticmethod
     def decrypt(c: _FeLWE_C, pub: _FeLWE_MK, sk: _FeLWE_SK) -> int:
-        """
-        Decrypt FeLWE cipher text
-
-        :param c: FeLWE cipher text
-        :param pub: FeLWE public key
-        :param sk: FeLWE decryption key
-        :return: Decrypted message
-        """
         u = ((sk.y @ c.c1) - (sk.Zy @ c.c0)) % pub.q
         factor = (pub.q // pub.k)
         minimum = factor

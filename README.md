@@ -14,12 +14,14 @@ pip install pymife
 1. (Selective Secure) DDH based scheme from https://eprint.iacr.org/2015/017.pdf
 2. (Selective Secure) LWE based scheme from https://eprint.iacr.org/2015/017.pdf
 3. (Adaptive Secure) Damgard based scheme from https://eprint.iacr.org/2015/608.pdf
+4. (Adaptive Secure) LWE based scheme from https://eprint.iacr.org/2015/608.pdf
 
 ### Multi input inner product
 1. (Adaptive Secure) Damgard based scheme from https://eprint.iacr.org/2017/972.pdf
 
 ### Multi client inner product 
 1. (Adaptive Secure with Random Oracle) DDH based scheme from https://eprint.iacr.org/2017/989.pdf
+2. (Adaptive Secure) Damgard based scheme from https://eprint.iacr.org/2019/487.pdf, using Damgard single input
 
 ## Note
 - The implementation of these schemes are not fully optimized and not peer-reviewed, recommended to only use for research / testing purpose.
@@ -57,7 +59,7 @@ sk = FeLWE.keygen(y, key)
 m = FeLWE.decrypt(c, key.get_public_key(), sk) % key.p
 ```
 
-#### Damgard based scheme
+#### (Adaptive Secure) Damgard based scheme
 
 ```python
 from mife.single.damgard import FeDamgard
@@ -69,6 +71,20 @@ key = FeDamgard.generate(n)
 c = FeDamgard.encrypt(x, key)
 sk = FeDamgard.keygen(y, key)
 m = FeDamgard.decrypt(c, key.get_public_key(), sk, (0, 1000))
+```
+
+#### (Adaptive Secure) LWE based scheme
+
+```python
+from mife.single.lwe import FeLWE
+
+n = 10
+x = [i - 10 for i in range(n)]
+y = [i for i in range(n)]
+key = FeLWE.generate(n, 4, 4)
+c = FeLWE.encrypt(x, key)
+sk = FeLWE.keygen(y, key)
+m = FeLWE.decrypt(c, key.get_public_key(), sk)
 ```
 
 ### Multi input inner product
@@ -124,10 +140,10 @@ res = FeDamgardMulti.decrypt(cs, key.get_public_key(), sk, (-10000000, 10000000)
 
 ### Multi client inner product
 
-#### DDH based scheme
+#### (Random Oracle) DDH based scheme
 
 ```python
-from mife.multiclient.ddh import FeDDHMultiClient
+from mife.multiclient.rom.ddh import FeDDHMultiClient
 
 n = 3
 m = 5
@@ -140,10 +156,26 @@ sk = FeDDHMultiClient.keygen(y, key)
 m = FeDDHMultiClient.decrypt(cs, tag, key.get_public_key(), sk, (0, 2000))
 ```
 
+#### Damgard based scheme
+
+```python
+from mife.multiclient.damgard import FeDamgardMultiClient
+
+n = 3
+m = 5
+x = [[i + j for j in range(m)] for i in range(n)]
+y = [[i - j + 10 for j in range(m)] for i in range(n)]
+tag = b"testingtag123"
+key = FeDamgardMultiClient.generate(n, m)
+cs = [FeDamgardMultiClient.encrypt(x[i], tag, key.get_enc_key(i), key.get_public_key()) for i in range(n)]
+sk = FeDamgardMultiClient.keygen(y, key)
+m = FeDamgardMultiClient.decrypt(cs, key.get_public_key(), sk, (0, 2000))
+```
+
 ##### Export Keys
 
 ```python
-from mife.multiclient.ddh import FeDDHMultiClient
+from mife.multiclient.rom.ddh import FeDDHMultiClient
 import json
 
 n = 3
@@ -178,4 +210,5 @@ For MCFE-DDH scheme, you can also supply your own hash function by using the sam
 - https://eprint.iacr.org/2015/608.pdf
 - https://eprint.iacr.org/2017/972.pdf
 - https://eprint.iacr.org/2017/989.pdf
+- https://eprint.iacr.org/2019/487.pdf
 - https://github.com/fentec-project/CiFEr/blob/master/src/innerprod/simple/lwe.cr2html
