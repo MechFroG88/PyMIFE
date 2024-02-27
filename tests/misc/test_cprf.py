@@ -12,7 +12,7 @@ class TestCPRF(unittest.TestCase):
         cprf.setup_key()
         keys = [cprf.keygen(i) for i in range(n)]
         x = b'hello'
-        res = [cprf.eval(i, keys[i], x, 512) for i in range(n)]
+        res = [cprf.eval(n, i, keys[i], x, 512) for i in range(n)]
         assert sum(res) == 0
 
     def test_cprf_2(self):
@@ -21,5 +21,5 @@ class TestCPRF(unittest.TestCase):
         cprf.setup_key()
         keys = [cprf.keygen(i) for i in range(n)]
         x = b'123456'
-        res = [cprf.eval(i, keys[i], x, 512) for i in range(n)]
+        res = [cprf.eval(n, i, keys[i], x, 512) for i in range(n)]
         assert sum(res) == 0

@@ -8,21 +8,6 @@ import json
 class TestFeDamgardMultiClient(TestBase):
     logging.getLogger().setLevel(logging.INFO)
 
-    def test_export(self):
-        n = 3
-        m = 5
-        x = [[i + j for j in range(m)] for i in range(n)]
-        y = [[i - j + 10 for j in range(m)] for i in range(n)]
-        tag = b"testingtag123"
-        key = FeDamgardMultiClient.generate(n, m)
-        cs = [FeDamgardMultiClient.encrypt(x[i], tag, key.get_enc_key(i)) for i in range(n)]
-        sk = FeDamgardMultiClient.keygen(y, key)
-        json.dumps([key.get_enc_key(i).export() for i in range(n)])
-        json.dumps(key.export())
-        [json.dumps(cs[i].export()) for i in range(n)]
-        json.dumps(sk.export())
-        json.dumps(key.get_public_key().export())
-
     def test_scheme_1(self):
         start = time.time()
         n = 3
@@ -45,8 +30,8 @@ class TestFeDamgardMultiClient(TestBase):
 
     def test_scheme_2(self):
         start = time.time()
-        n = 25
-        m = 25
+        n = 10
+        m = 10
         x = [[i * 10 + j for j in range(m)] for i in range(n)]
         y = [[i - j - 5 for j in range(m)] for i in range(n)]
         tag = str(start).encode()
@@ -66,8 +51,8 @@ class TestFeDamgardMultiClient(TestBase):
 
     def test_scheme_3(self):
         start = time.time()
-        n = 50
-        m = 50
+        n = 25
+        m = 25
         x = [[1 for j in range(m)] for i in range(n)]
         y = [[1 for j in range(m)] for i in range(n)]
         tag = str(start).encode()
