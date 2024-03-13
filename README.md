@@ -193,7 +193,6 @@ print(f"secret_key = {json.dumps(sk.export())}")
 print(f"pub_key = {json.dumps(key.get_public_key().export())}")
 ```
 
-
 ## Customize
 
 All of the DDH and Damgard schemes support custom group. You can implement your own group class by extending `/src/mife/data/group.py` as base class.
