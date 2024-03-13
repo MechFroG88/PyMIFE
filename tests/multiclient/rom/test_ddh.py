@@ -129,3 +129,24 @@ class TestFeDDHMultiClient(TestBase):
             expected += sum([a * b for a, b in zip(x[i], y[i])])
 
         self.assertEqual(expected, res)
+
+    def test_scheme_safe_1(self):
+        start = time.time()
+        n = 25
+        m = 25
+        x = [[i * 10 + j for j in range(m)] for i in range(n)]
+        y = [[i - j - 5 for j in range(m)] for i in range(n)]
+        tag = str(start).encode()
+        key = FeDDHMultiClient.generate(n, m)
+        cs = [FeDDHMultiClient.encrypt(x[i], tag, key.get_enc_key(i)) for i in range(n)]
+        sk = FeDDHMultiClient.keygen_safe(y, key, tag)
+        res = FeDDHMultiClient.decrypt_safe(cs, key.get_public_key(), sk, (-10000000, 10000000))
+        end = time.time()
+
+        logging.info(f'FeDDHMultiClient test scheme 2 performance with Prime Group (n={n},m={m}): {end - start}s')
+
+        expected = 0
+        for i in range(n):
+            expected += sum([a * b for a, b in zip(x[i], y[i])])
+
+        self.assertEqual(expected, res)

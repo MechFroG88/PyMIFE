@@ -7,7 +7,8 @@ from mife.data.group import GroupBase
 from mife.data.zmod import Zmod
 from mife.misc.cprf import CPRF
 
-from mife.single.damgard import _FeDamgard_MK, FeDamgard, _FeDamgard_C, _FeDamgard_SK
+from mife.single.damgard import _FeDamgard_MK, FeDamgard, _FeDamgard_C, _FeDamgard_SK, _FeDamgard_SK_Safe
+
 
 # References:
 # https://eprint.iacr.org/2019/487.pdf
@@ -53,6 +54,15 @@ class _FeDamgardMultiClient_SK:
     def export(self):
         pass
 
+
+class _FeDamgardMultiClient_SK_Safe:
+    def __init__(self, k: List[_FeDamgard_SK_Safe]):
+        self.k = k
+
+    def export(self):
+        pass
+
+
 class _FeDamgardMultiClient_C:
     def __init__(self, tag: bytes, c: _FeDamgard_C):
         self.c = c
@@ -60,6 +70,7 @@ class _FeDamgardMultiClient_C:
 
     def export(self):
         pass
+
 
 class FeDamgardMultiClient:
 
@@ -113,9 +124,35 @@ class FeDamgardMultiClient:
         return discrete_log_bound(actual_cul, pub.ipfe.g, bound)
 
     @staticmethod
+    def decrypt_safe(c: List[_FeDamgardMultiClient_C], pub: _FeDamgardMultiClient_MK,
+                     sk: _FeDamgardMultiClient_SK_Safe, bound: Tuple[int, int]) -> int:
+
+        for i in range(pub.n):
+            if c[i].tag != c[0].tag:
+                raise Exception("All cipher text must have the same tag")
+
+        actual_cul = pub.ipfe.F.identity()
+        for k in range(pub.n):
+            cul = pub.ipfe.F.identity()
+            for i in range(pub.ipfe.n):
+                cul = cul + sk.k[k].y[i] * c[k].c.c[i]
+            cul = cul - sk.k[k].g_r_sx - sk.k[k].h_r_tx
+            actual_cul = actual_cul + cul
+
+        return discrete_log_bound(actual_cul, pub.ipfe.g, bound)
+
+    @staticmethod
     def keygen(y: List[List[int]], key: _FeDamgardMultiClient_MK) -> _FeDamgardMultiClient_SK:
         actual_y = [y[i][j] for i in range(key.n) for j in range(key.m)]
         if len(y) != key.n or len(actual_y) != key.n * key.m:
             raise Exception(f"Function vector must be a {key.n} x {key.m} matrix")
         k = FeDamgard.keygen(actual_y, key.ipfe)
         return _FeDamgardMultiClient_SK(k)
+
+    @staticmethod
+    def keygen_safe(y: List[List[int]], key: _FeDamgardMultiClient_MK, c: List[_FeDamgardMultiClient_C]):
+        actual_y = [y[i][j] for i in range(key.n) for j in range(key.m)]
+        if len(y) != key.n or len(actual_y) != key.n * key.m:
+            raise Exception(f"Function vector must be a {key.n} x {key.m} matrix")
+        k = [FeDamgard.keygen_safe(actual_y, key.ipfe, c[i].c) for i in range(key.n)]
+        return _FeDamgardMultiClient_SK_Safe(k)

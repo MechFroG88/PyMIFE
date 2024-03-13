@@ -65,6 +65,27 @@ class _FeDamgard_SK:
             "tx": self.tx
         }
 
+class _FeDamgard_SK_Safe:
+    def __init__(self, y: List[int], g_r_sx: GroupElem, h_r_tx: GroupElem):
+        """
+        Initialize FeDamgard decryption key
+
+        :param y: Function vector
+        :param g_r_sx: g * (r + <s, y>)
+        :param h_r_tx: h * (r + <t, y>)
+        """
+        self.y = y
+        self.g_r_sx = g_r_sx
+        self.h_r_tx = h_r_tx
+
+    def export(self):
+        return {
+            "y": self.y,
+            "g_r_sx": self.g_r_sx,
+            "h_r_tx": self.h_r_tx
+        }
+
+
 
 class _FeDamgard_C:
     def __init__(self, g_r: GroupElem, h_r: GroupElem, c: List[GroupElem]):
@@ -146,6 +167,24 @@ class FeDamgard:
         return discrete_log_bound(cul, pub.g, bound)
 
     @staticmethod
+    def decrypt_safe(c: _FeDamgard_C, pub: _FeDamgard_MK, sk: _FeDamgard_SK_Safe, bound: Tuple[int, int]):
+        """
+        Decrypt FeDamgard cipher text within a bound using safe key
+
+        :param c: FeDamgard cipher text
+        :param pub: FeDamgard public key
+        :param sk: FeDamgard decryption key
+        :param bound: Bound for discrete logarithm search, the decrypted text should be within the bound
+        :return: Decrypted message
+        """
+        cul = pub.F.identity()
+        for i in range(pub.n):
+            cul = cul + sk.y[i] * c.c[i]
+        cul = cul - sk.g_r_sx - sk.h_r_tx
+        return discrete_log_bound(cul, pub.g, bound)
+
+
+    @staticmethod
     def keygen(y: List[int], key: _FeDamgard_MK) -> _FeDamgard_SK:
         """
         Generate FeDamgard decryption key
@@ -161,3 +200,20 @@ class FeDamgard:
         sx = inner_product([key.msk[i][0] for i in range(key.n)], y)
         tx = inner_product([key.msk[i][1] for i in range(key.n)], y)
         return _FeDamgard_SK(y, sx, tx)
+
+    @staticmethod
+    def keygen_safe(y: List[int], key: _FeDamgard_MK, c: _FeDamgard_C) -> _FeDamgard_SK_Safe:
+        """
+        Generate FeDamgard safer decryption key
+
+        :param y: Function vector
+        :param key: FeDamgard
+        :param c: FeDamgard cipher text
+        :return: FeDamgard decryption key
+        """
+        normal_key = FeDamgard.keygen(y, key)
+        g_r_sx = c.g_r * normal_key.sx
+        h_r_tx = c.h_r * normal_key.tx
+        return _FeDamgard_SK_Safe(y, g_r_sx, h_r_tx)
+
+

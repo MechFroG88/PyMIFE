@@ -87,7 +87,8 @@ class _FeDDHMultiClient_MK:
             "m": self.m,
             "F": self.F.export(),
             "hash": self.hash.export(),
-            "msk": [[[int(vec2[0]), int(vec2[1])] for vec2 in vec] for vec in self.msk] if self.msk is not None else None
+            "msk": [[[int(vec2[0]), int(vec2[1])] for vec2 in vec] for vec in
+                    self.msk] if self.msk is not None else None
         }
 
 
@@ -124,6 +125,24 @@ class _FeDDHMultiClient_SK:
         """
         self.y = y
         self.d = d
+
+    def export(self):
+        return {
+            "y": self.y,
+            "d": self.d
+        }
+
+
+class _FeDDHMultiClient_SK_Safe:
+    def __init__(self, y: List[List[int]], td: Tuple[int, int]):
+        """
+        Initialize FeDDHMultiClient decryption key
+
+        :param y: Function vector
+        :param td: g1 * <msk, y>, g2 * <msk, y>
+        """
+        self.y = y
+        self.td = td
 
     def export(self):
         return {
@@ -222,6 +241,26 @@ class FeDDHMultiClient:
         return discrete_log_bound(cul, key.g, bound)
 
     @staticmethod
+    def decrypt_safe(c: List[_FeDDHMultiClient_C], key: _FeDDHMultiClient_MK, sk: _FeDDHMultiClient_SK_Safe,
+                     bound: Tuple[int, int]) -> int:
+        """
+        Decrypt FeDDHMultiClient cipher text
+
+        :param c: FeDDHMultiClient cipher text
+        :param key: FeDDHMultiClient public key
+        :param sk: FeDDHMultiClient decryption key
+        :param bound: Bound for the discrete log problem
+        :return: Decrypted message
+        """
+        cul = key.F.identity()
+
+        for i in range(key.n):
+            cul = cul + inner_product(c[i].c, sk.y[i], key.F.identity())
+
+        cul = cul - (sk.td[0] + sk.td[1])
+        return discrete_log_bound(cul, key.g, bound)
+
+    @staticmethod
     def keygen(y: List[List[int]], key: _FeDDHMultiClient_MK) -> _FeDDHMultiClient_SK:
         """
         Generate a FeDDHMultiClient decryption key
@@ -244,3 +283,19 @@ class FeDDHMultiClient:
 
         d = (cul_1, cul_2)
         return _FeDDHMultiClient_SK(y, d)
+
+    @staticmethod
+    def keygen_safe(y: List[List[int]], key: _FeDDHMultiClient_MK, tag: bytes) -> _FeDDHMultiClient_SK_Safe:
+        """
+        Generate a safe FeDDHMultiClient decryption key
+
+        :param y: Function vector
+        :param key: FeDDHMultiClient master key
+        :param tag: Tag for the decryption key
+        :return: FeDDHMultiClient decryption key
+        """
+        normal_key = FeDDHMultiClient.keygen(y, key)
+        u1, u2 = key.hash(tag)
+        u1, u2 = key.g * u1, key.g * u2
+        td = (u1 * normal_key.d[0], u2 * normal_key.d[1])
+        return _FeDDHMultiClient_SK_Safe(y, td)
