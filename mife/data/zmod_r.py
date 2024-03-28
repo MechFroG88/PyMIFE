@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Self
 from gmpy2 import mpz
+from Crypto.Util.number import inverse
 
 
 class ZmodR():
@@ -18,6 +19,9 @@ class ZmodR():
 
     def __str__(self) -> str:
         return f"Multiplicative Group of integer modulo {self.modulus}"
+
+    def order(self) -> int:
+        return self.modulus
 
     def export(self) -> dict:
         return {
@@ -45,6 +49,9 @@ class _ZmodRElem():
             return Exception(f"Addition not define for element of {self.group} and {other.group}")
         return _ZmodRElem(self.group, (self.val + other.val) % self.group.modulus)
 
+    def __rsub__(self, other):
+        return _ZmodRElem(self.group, (other - self.val) % self.group.modulus)
+
     def __neg__(self) -> Self:
         return _ZmodRElem(self.group, -self.val)
 
@@ -59,7 +66,17 @@ class _ZmodRElem():
             return _ZmodRElem(self.group, (self.val * other) % self.group.modulus)
         return _ZmodRElem(self.group, (self.val * other.val) % self.group.modulus)
 
+    def __truediv__(self, other):
+        if isinstance(other, int):
+            return self.__mul__(_ZmodRElem(self.group, mpz(inverse(other, self.group.modulus))))
+        return self.__mul__(_ZmodRElem(self.group, mpz(inverse(other.val, self.group.modulus))))
+
+    def __rtruediv__(self, other):
+        return _ZmodRElem(self.group, other * mpz(inverse(self.val, self.group.modulus)))
+
     def __eq__(self, other):
+        if (isinstance(other, int) or isinstance(other, mpz)):
+            return self.val == _ZmodRElem(self.group, other).val
         return type(self) == type(other) and self.group == other.group and self.val == other.val
 
     def __int__(self):

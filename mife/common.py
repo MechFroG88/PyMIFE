@@ -1,5 +1,6 @@
 from random import randrange
 from math import isqrt
+from mife.data.matrix import Matrix
 
 
 def inner_product(x, y, identity=0):
@@ -84,3 +85,18 @@ def discrete_log_bound_brute(a, g, bounds):
             return ans
         cul = (cul + g)
     raise Exception(f"Discrete log for {a} under base {g} not found in bounds ({bounds[0]}, {bounds[1]})")
+
+def invertible_matrix(G, n):
+    """
+    Generate an invertible matrix
+    :param G: Field to use for the matrix
+    :param n: Dimension of the matrix
+    :return:
+    """
+    while True:
+        M = Matrix([[G(randrange(G.order())) for _ in range(n)] for _ in range(n)])
+        try:
+            M.inverse()
+            return M
+        except:
+            pass

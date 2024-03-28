@@ -16,6 +16,9 @@ pip install pymife
 3. (Adaptive Secure) Damgard based scheme from https://eprint.iacr.org/2015/608.pdf
 4. (Adaptive Secure) LWE based scheme from https://eprint.iacr.org/2015/608.pdf
 
+### Single input inner product (Function Hiding)
+1. (Adaptive Secure) DDH based scheme from https://eprint.iacr.org/2016/440.pdf
+
 ### Multi input inner product
 1. (Adaptive Secure) Damgard based scheme from https://eprint.iacr.org/2017/972.pdf
 
@@ -87,6 +90,21 @@ sk = FeLWE.keygen(y, key)
 m = FeLWE.decrypt(c, key.get_public_key(), sk)
 ```
 
+### Single input inner product (Function Hiding)
+
+#### DDH based scheme
+
+```python
+from mife.single.fhiding.ddh import FeDDH
+
+n = 4
+x = [i for i in range(n)]
+y = [i + 10 for i in range(n)]
+key = FeDDH.generate(n)
+c = FeDDH.encrypt(x, key)
+sk = FeDDH.keygen(y, key)
+m = FeDDH.decrypt(c, key.get_public_key(), sk, (0, 1000))
+```
 ### Multi input inner product
 
 #### Damgard based scheme

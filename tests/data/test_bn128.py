@@ -11,7 +11,7 @@ class TestBn128(TestBase):
         gT = G.generatorT()
 
         start1 = time.time()
-        assert G.pairing(2 * g1, 3 * g2) == (6 * gT)
+        self.assertEqual(G.pairing(g1 + g1, 3 * g2), (4 * gT) + (3 * gT) - (1 * gT))
         end1 = time.time()
 
         logging.info(f'Bn128 Pairing Basic 1 : {end1 - start1}s')
@@ -23,7 +23,7 @@ class TestBn128(TestBase):
         gT = G.generatorT()
 
         start1 = time.time()
-        assert G.pairing(g1, g2) == gT
+        self.assertEqual(G.pairing(g1, g2), gT)
         end1 = time.time()
 
         logging.info(f'Bn128 Pairing Basic 2 : {end1 - start1}s')

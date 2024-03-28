@@ -92,10 +92,10 @@ class Bn128PairingPointT(GroupElem):
         self.val = val
 
     def __add__(self, other):
-        return Bn128PairingPointT(self.val + other.val)
+        return Bn128PairingPointT(self.val * other.val)
 
     def __neg__(self):
-        return Bn128PairingPointT(-self.val)
+        return Bn128PairingPointT(FQ12.one() / self.val)
 
     def __rmul__(self, other):
         return Bn128PairingPointT(self.val ** other)
@@ -104,7 +104,7 @@ class Bn128PairingPointT(GroupElem):
         return self.val == other.val
 
     def __hash__(self):
-        pass
+        return hash(str(self.val))
 
     def export(self) -> dict:
         pass

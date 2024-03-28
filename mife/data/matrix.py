@@ -62,6 +62,45 @@ class Matrix:
         m = [[self.M[j][i] for j in range(self.n)] for i in range(self.m)]
         return Matrix(m)
 
+    def inverse(self, with_determinant=False) -> Self:
+        det = 1
+        if self.n != self.m:
+            raise Exception("Matrix must be square to be invertible")
+        A = [row.copy() for row in self.M]
+        n = len(A)
+        m = len(A[0])
+        I = [[int(i == j) for j in range(m)] for i in range(n)]
+        for i in range(n):
+            pivot = i
+            while pivot < n and A[pivot][i] == 0:
+                pivot += 1
+            if pivot == n:
+                raise Exception("Matrix is not invertible")
+            A[i], A[pivot] = A[pivot], A[i]
+            I[i], I[pivot] = I[pivot], I[i]
+            if pivot != i:
+                det = -det
+            pivot = i
+            factor = A[pivot][i]
+            det /= factor
+            for j in range(n):
+                A[pivot][j] = A[pivot][j] / factor
+                I[pivot][j] = I[pivot][j] / factor
+            for j in range(n):
+                t = A[j][pivot]
+                if j == pivot:
+                    continue
+                I[j] = [I[j][k] - t * I[pivot][k] for k in range(n)]
+                A[j] = [A[j][k] - t * A[pivot][k] for k in range(n)]
+
+        if with_determinant:
+            return (Matrix(I), det)
+
+        return Matrix(I)
+
+    def determinant(self) -> Any:
+        return self.inverse(with_determinant=True)[1]
+
     def __add__(self, other: Self) -> Self:
         if self.n != other.n or self.m != other.m:
             raise Exception(f"Matrix addition not supported for size {self.n} x {self.m} and {other.n} x {other.m}")
@@ -82,6 +121,17 @@ class Matrix:
 
     def __getitem__(self, index) -> List[int]:
         return self.M[index]
+
+    def __eq__(self, other):
+        if not isinstance(other, Matrix):
+            return False
+        if self.n != other.n or self.m != other.m:
+            return False
+        for i in range(self.n):
+            for j in range(self.m):
+                if self.M[i][j] != other.M[i][j]:
+                    return False
+        return True
 
     def apply_func(self, func: Callable) -> Self:
         return Matrix([[func(self.M[i][j]) for j in range(self.m)] for i in range(self.n)])
