@@ -63,7 +63,7 @@ class FeDDH:
         G = ZmodR(F.order())
         B = invertible_matrix(G, n)
         B_determinant = B.determinant()
-        B_star = B_determinant.val * B.inverse().T
+        B_star = int(B_determinant) * B.inverse().T
 
         msk = _FeDDH_MSK(g1, g2, B, B_star, B_determinant)
 
@@ -87,7 +87,7 @@ class FeDDH:
 
         x = [key.G(x[i]) for i in range(key.n)]
         exponents = Matrix.flatten((Matrix(x) * key.msk.B_star).M)
-        c2 = [((exponents[i] * beta).val) * key.msk.g2 for i in range(key.n)]
+        c2 = [int(exponents[i] * beta) * key.msk.g2 for i in range(key.n)]
 
         return _FeDDH_C(c1, c2)
 
@@ -127,10 +127,10 @@ class FeDDH:
 
         alpha = randbelow(key.G.order())
 
-        k1 = ((alpha * key.msk.B_determinant).val) * key.msk.g1
+        k1 = (int(alpha * key.msk.B_determinant)) * key.msk.g1
 
         y = [key.G(y[i]) for i in range(key.n)]
         exponents = Matrix.flatten((Matrix(y) * key.msk.B).M)
-        k2 = [((exponents[i] * alpha).val) * key.msk.g1 for i in range(key.n)]
+        k2 = [int(exponents[i] * alpha) * key.msk.g1 for i in range(key.n)]
 
         return _FeDDH_SK(k1, k2)

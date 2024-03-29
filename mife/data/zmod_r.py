@@ -37,23 +37,28 @@ class _ZmodRElem():
 
     def __init__(self, group: ZmodR, val: mpz):
         self.group = group
-        self.val = val
+        self._val = val
+
+    @property
+    def val(self):
+        self._val = self._val % self.group.modulus
+        return self._val
 
     def __radd__(self, other):
         return self.__add__(other)
 
     def __add__(self, other: Self) -> Self:
         if isinstance(other, int) or isinstance(other, mpz):
-            return _ZmodRElem(self.group, (self.val + other) % self.group.modulus)
+            return _ZmodRElem(self.group, (self._val + other) % self.group.modulus)
         if self.group != other.group:
             return Exception(f"Addition not define for element of {self.group} and {other.group}")
-        return _ZmodRElem(self.group, (self.val + other.val) % self.group.modulus)
+        return _ZmodRElem(self.group, (self._val + other._val) % self.group.modulus)
 
     def __rsub__(self, other):
-        return _ZmodRElem(self.group, (other - self.val) % self.group.modulus)
+        return _ZmodRElem(self.group, (other - self._val) % self.group.modulus)
 
     def __neg__(self) -> Self:
-        return _ZmodRElem(self.group, -self.val)
+        return _ZmodRElem(self.group, -self._val)
 
     def __sub__(self, other):
         return self.__add__(-other)
@@ -63,16 +68,16 @@ class _ZmodRElem():
 
     def __mul__(self, other: _ZmodRElem):
         if isinstance(other, int) or isinstance(other, mpz):
-            return _ZmodRElem(self.group, (self.val * other) % self.group.modulus)
-        return _ZmodRElem(self.group, (self.val * other.val) % self.group.modulus)
+            return _ZmodRElem(self.group, (self._val * other) % self.group.modulus)
+        return _ZmodRElem(self.group, (self._val * other._val) % self.group.modulus)
 
     def __truediv__(self, other):
         if isinstance(other, int):
             return self.__mul__(_ZmodRElem(self.group, mpz(inverse(other, self.group.modulus))))
-        return self.__mul__(_ZmodRElem(self.group, mpz(inverse(other.val, self.group.modulus))))
+        return self.__mul__(_ZmodRElem(self.group, mpz(inverse(other._val, self.group.modulus))))
 
     def __rtruediv__(self, other):
-        return _ZmodRElem(self.group, other * mpz(inverse(self.val, self.group.modulus)))
+        return _ZmodRElem(self.group, other * mpz(inverse(self._val, self.group.modulus)))
 
     def __eq__(self, other):
         if (isinstance(other, int) or isinstance(other, mpz)):

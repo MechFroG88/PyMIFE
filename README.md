@@ -19,6 +19,9 @@ pip install pymife
 ### Single input inner product (Function Hiding)
 1. (Adaptive Secure) DDH based scheme from https://eprint.iacr.org/2016/440.pdf
 
+### Single input inner product (Quadratic)
+1. (Adaptive Secure) DDH based scheme from https://eprint.iacr.org/2018/206.pdf
+
 ### Multi input inner product
 1. (Adaptive Secure) Damgard based scheme from https://eprint.iacr.org/2017/972.pdf
 
@@ -105,6 +108,26 @@ c = FeDDH.encrypt(x, key)
 sk = FeDDH.keygen(y, key)
 m = FeDDH.decrypt(c, key.get_public_key(), sk, (0, 1000))
 ```
+
+
+### Single input inner product (Quadratic)
+
+#### DDH based scheme
+
+```python
+from mife.single.quadratic.ddh import FeDDH
+
+n = 2
+x = [i + 2 for i in range(n)]
+y = [i + 3 for i in range(n)]
+f = [[i + j + 1 for j in range(n)] for i in range(n)]
+key = FeDDH.generate(n)
+c = FeDDH.encrypt(x, y, key)
+sk = FeDDH.keygen(f, key)
+m = FeDDH.decrypt(c, key.get_public_key(), sk, (0, 1000))
+```
+
+
 ### Multi input inner product
 
 #### Damgard based scheme
@@ -219,13 +242,17 @@ To use custom group, simply pass the group class to the `generate` function.
 
 This library has implemented prime order group and curve25519 group.
 
-For MCFE-DDH scheme, you can also supply your own hash function by using the same signature as the default hash function found in `/src/mife/multiclient/ddh.py`.
+For Random Oracle Model MCFE-DDH scheme, you can also supply your own hash function by using the same signature as the default hash function found in `/src/mife/multiclient/ddh.py`.
+
+For Function Hiding and Quadratic scheme, you can supply your own pairing group better efficiency.
 
 ## References
 
 - https://eprint.iacr.org/2015/017.pdf
 - https://eprint.iacr.org/2015/608.pdf
+- https://eprint.iacr.org/2016/440.pdf
 - https://eprint.iacr.org/2017/972.pdf
 - https://eprint.iacr.org/2017/989.pdf
+- https://eprint.iacr.org/2018/206.pdf
 - https://eprint.iacr.org/2019/487.pdf
 - https://github.com/fentec-project/CiFEr/blob/master/src/innerprod/simple/lwe.cr2html
