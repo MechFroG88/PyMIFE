@@ -28,6 +28,7 @@ pip install pymife
 ### Multi client inner product 
 1. (Adaptive Secure with Random Oracle) DDH based scheme from https://eprint.iacr.org/2017/989.pdf
 2. (Adaptive Secure) Damgard based scheme from https://eprint.iacr.org/2019/487.pdf, using Damgard single input
+3. (Adaptive Secure with Random Oracle) Decentralized DDH based scheme from https://eprint.iacr.org/2019/020.pdf
 
 ## Note
 - The implementation of these schemes are not fully optimized and not peer-reviewed, recommended to only use for research / testing purpose.
@@ -213,6 +214,31 @@ sk = FeDamgardMultiClient.keygen(y, key)
 m = FeDamgardMultiClient.decrypt(cs, key.get_public_key(), sk, (0, 2000))
 ```
 
+#### (Random Oracle) Decentralized DDH based scheme
+
+```python
+from mife.multiclient.decentralized.ddh import FeDDHMultiClientDec
+
+n = 3
+m = 5
+x = [[i + j for j in range(m)] for i in range(n)]
+y = [[i - j + 10 for j in range(m)] for i in range(n)]
+tag = b"testingtag123"
+pub = FeDDHMultiClientDec.generate(n, m)
+keys = [pub.generate_party(i) for i in range(n)]
+
+for i in range(n):
+    for j in range(n):
+        if i == j: continue
+        keys[i].exchange(j, keys[j].get_exc_public_key())
+
+for i in range(n):
+    keys[i].generate_share()
+
+cs = [FeDDHMultiClientDec.encrypt(x[i], tag, keys[i]) for i in range(n)]
+sk = [FeDDHMultiClientDec.keygen(y, keys[i]) for i in range(n)]
+m = FeDDHMultiClientDec.decrypt(cs, tag, pub, sk, (0, 2000))
+```
 ##### Export Keys
 
 ```python
@@ -254,5 +280,6 @@ For Function Hiding and Quadratic scheme, you can supply your own pairing group 
 - https://eprint.iacr.org/2017/972.pdf
 - https://eprint.iacr.org/2017/989.pdf
 - https://eprint.iacr.org/2018/206.pdf
+- https://eprint.iacr.org/2019/020.pdf
 - https://eprint.iacr.org/2019/487.pdf
 - https://github.com/fentec-project/CiFEr/blob/master/src/innerprod/simple/lwe.cr2html

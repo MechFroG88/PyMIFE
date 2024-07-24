@@ -1,9 +1,8 @@
 from secrets import randbelow
-from Crypto.Util.number import getStrongPrime, bytes_to_long
+from Crypto.Util.number import bytes_to_long
 from typing import List, Tuple, Callable
 
-from mife.common import discrete_log_bound, inner_product
-
+from mife.common import discrete_log_bound, inner_product, getStrongPrime
 from mife.data.group import GroupBase, GroupElem
 from mife.data.zmod import Zmod
 
@@ -280,6 +279,8 @@ class FeDDHMultiClient:
                 s1, s2 = key.msk[i][j]
                 cul_1 += s1 * y[i][j]
                 cul_2 += s2 * y[i][j]
+                cul_1 %= key.F.order()
+                cul_2 %= key.F.order()
 
         d = (cul_1, cul_2)
         return _FeDDHMultiClient_SK(y, d)
