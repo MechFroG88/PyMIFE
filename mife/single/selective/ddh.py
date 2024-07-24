@@ -1,8 +1,7 @@
 from secrets import randbelow
-from Crypto.Util.number import getStrongPrime
 from typing import List, Tuple
 
-from mife.common import inner_product, discrete_log_bound
+from mife.common import inner_product, discrete_log_bound, getStrongPrime
 from mife.data.zmod import Zmod
 from mife.data.group import GroupBase, GroupElem
 
@@ -141,5 +140,5 @@ class FeDDH:
             raise Exception(f"Function vector must be of length {key.n}")
         if not key.has_private_key():
             raise Exception("Private key not found in master key")
-        sk = inner_product(key.msk, y)
+        sk = inner_product(key.msk, y) % key.F.order()
         return _FeDDH_SK(y, sk)

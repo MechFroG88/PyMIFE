@@ -28,6 +28,7 @@ class Zmod(GroupBase):
     def generator(self) -> _ZmodElem:
         while True:
             g = secrets.randbelow(self.modulus)
+            g = (g ** 2) % self.modulus
             if gcd(g, self.modulus) != 1 or g == 1:
                 continue
             if (self.modulus - 1) % g == 0:

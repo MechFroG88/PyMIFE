@@ -1,7 +1,6 @@
-from Crypto.Util.number import getStrongPrime
 from typing import List, Tuple
 
-from mife.common import discrete_log_bound, inner_product
+from mife.common import discrete_log_bound, getStrongPrime
 
 from mife.data.group import GroupBase
 from mife.data.zmod import Zmod

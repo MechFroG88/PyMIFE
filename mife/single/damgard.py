@@ -1,8 +1,7 @@
 from secrets import randbelow
-from Crypto.Util.number import getStrongPrime
 from typing import List, Tuple
 
-from mife.common import inner_product, discrete_log_bound
+from mife.common import inner_product, discrete_log_bound, getStrongPrime
 from mife.data.zmod import Zmod
 from mife.data.group import GroupBase, GroupElem
 
@@ -197,8 +196,8 @@ class FeDamgard:
             raise Exception(f"Function vector must be of length {key.n}")
         if not key.has_private_key():
             raise Exception("Private key not found in master key")
-        sx = inner_product([key.msk[i][0] for i in range(key.n)], y)
-        tx = inner_product([key.msk[i][1] for i in range(key.n)], y)
+        sx = inner_product([key.msk[i][0] for i in range(key.n)], y) % key.F.order()
+        tx = inner_product([key.msk[i][1] for i in range(key.n)], y) % key.F.order()
         return _FeDamgard_SK(y, sx, tx)
 
     @staticmethod

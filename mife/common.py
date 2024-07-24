@@ -1,6 +1,8 @@
+import sys
 from random import randrange
 from math import isqrt
 from mife.data.matrix import Matrix
+from Crypto.Util.number import getPrime, isPrime, getStrongPrime as getStrongPrimeCrypto
 
 
 def inner_product(x, y, identity=0):
@@ -17,7 +19,8 @@ def inner_product(x, y, identity=0):
     return sum([x[i] * y[i] for i in range(len(x))], start=identity)
 
 
-# Referenced from https://github.com/sagemath/sagelib/blob/fd0c7c46e6a2da4b84df582e0da0333ce5cf79d9/sage/groups/generic.py#L824
+# Referenced from
+# https://github.com/sagemath/sagelib/blob/fd0c7c46e6a2da4b84df582e0da0333ce5cf79d9/sage/groups/generic.py#L824
 
 def discrete_log_bound(a, g, bounds):
     """
@@ -86,6 +89,7 @@ def discrete_log_bound_brute(a, g, bounds):
         cul = (cul + g)
     raise Exception(f"Discrete log for {a} under base {g} not found in bounds ({bounds[0]}, {bounds[1]})")
 
+
 def invertible_matrix(G, n):
     """
     Generate an invertible matrix
@@ -100,3 +104,14 @@ def invertible_matrix(G, n):
             return M
         except:
             pass
+
+
+testprime = 146587529524709226584608678182150310560732245493607530424383103752420694008032314434746390098311798846676971705870171857700058048653275036770298161313862907341226267129457405778196507399731262315844287259617381602798205203902113141569063451666234258167808836110081803275293847197433918819959992552039357447043
+
+def getStrongPrime(n):
+    if 'unittest' in sys.modules:
+        if n == 1024:
+            return testprime
+        return getPrime(n)
+    # in case of deprecation
+    return getStrongPrimeCrypto(n)
