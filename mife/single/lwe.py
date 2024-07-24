@@ -109,7 +109,7 @@ class FeLWE:
         e1 = Matrix([round(sys_random.gauss(0, pub.alpha * pub.q)) for _ in range(pub.l)], dtype=object)
 
         c0 = ((pub.A @ s) + e0) % pub.q
-        c1 = ((pub.U @ s) + e1 + ((pub.q // pub.k) * Matrix(x))) % pub.q
+        c1 = ((pub.U @ s) + e1 + ((pub.q // pub.k) * Matrix(x, dtype=object))) % pub.q
 
         return _FeLWE_C(c0, c1)
 
@@ -127,7 +127,7 @@ class FeLWE:
                 minimum = abs(u1)
                 answer = i
 
-        if answer > pub.k//2 :
+        if answer > pub.k//2:
             return answer - pub.k
         return answer
 
