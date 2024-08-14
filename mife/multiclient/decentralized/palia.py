@@ -34,4 +34,6 @@ class Palia:
 
     @staticmethod
     def generate_query_key(pub: _FeDDHMultiClientDec_PK) -> PaillierKey:
-        return Paillier.generate(pub.F.order().bit_length() + (pub.n * pub.m).bit_length() + 1)
+        bitsize = ((pub.F.order().bit_length() + (pub.n * pub.m).bit_length() + 127) // 128) * 128
+        bitsize = max(512, bitsize)
+        return Paillier.generate(bitsize)
