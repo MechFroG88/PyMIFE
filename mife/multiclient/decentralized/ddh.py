@@ -63,16 +63,16 @@ class _FeDDHMultiClientDec_MK:
         self.exchange_key[index] = key_agreement(static_priv=self.exc_priv_key, static_pub=pub_key, kdf=kdf)
 
     def generate_share(self):
-        length = self.pub.F.order().bit_length()
+        length = self.pub.F.order().bit_length() // 8
         self.share = [[] for _ in range(self.pub.n)]
         for i in range(self.pub.n):
             for j in range(self.pub.m):
                 nonce = long_to_bytes(i * self.pub.m + j)
                 self.share[i].append(
                     (cprf.CPRF.eval(self.pub.n, self.index, self.exchange_key,
-                                    b'a' + nonce, length),
+                                    b'a' + nonce, length) % self.pub.F.order(),
                      cprf.CPRF.eval(self.pub.n, self.index, self.exchange_key,
-                                    b'b' + nonce, length))
+                                    b'b' + nonce, length) % self.pub.F.order())
                 )
 
 
@@ -86,13 +86,6 @@ class _FeDDHMultiClientDec_C:
     def __init__(self, tag: bytes, c: List[GroupElem]):
         self.c = c
         self.tag = tag
-
-    def export(self):
-        return {
-            "tag": self.tag.hex(),
-            "c": [x.export() for x in self.c]
-        }
-
 
 class FeDDHMultiClientDec:
 

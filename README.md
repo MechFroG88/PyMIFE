@@ -30,6 +30,9 @@ pip install pymife
 2. (Adaptive Secure) Damgard based scheme from https://eprint.iacr.org/2019/487.pdf, using Damgard single input
 3. (Adaptive Secure with Random Oracle) Decentralized DDH based scheme from https://eprint.iacr.org/2019/020.pdf
 
+### Private Non-interactive Aggregation (PALIA)
+1. (Adaptive Secure with Random Oracle) Damgard based scheme
+
 ## Note
 - The implementation of these schemes are not fully optimized and not peer-reviewed, recommended to only use for research / testing purpose.
 - More schemes will be added in the future
@@ -239,6 +242,36 @@ cs = [FeDDHMultiClientDec.encrypt(x[i], tag, keys[i]) for i in range(n)]
 sk = [FeDDHMultiClientDec.keygen(y, keys[i]) for i in range(n)]
 m = FeDDHMultiClientDec.decrypt(cs, tag, pub, sk, (0, 2000))
 ```
+
+### Private Non-interactive Aggregation (PALIA)
+
+```python
+from mife.multiclient.decentralized.palia import Palia
+
+n = 3
+m = 5
+x = [[i + j for j in range(m)] for i in range(n)]
+y = [[i - j + 10 for j in range(m)] for i in range(n)]
+
+tag = b"testingtag123"
+pub = Palia.generate(n, m)
+keys = [pub.generate_party(i) for i in range(n)]
+for i in range(n):
+    for j in range(n):
+        if i == j: continue
+        keys[i].exchange(j, keys[j].get_exc_public_key())
+        
+for i in range(n):
+    keys[i].generate_share()
+    
+mk = Palia.generate_query_key(pub)
+pk = mk.getPublicKey()
+enc_y = Palia.encrypt_query(y, pk, pub)
+
+cs = [Palia.encrypt(x[i], tag, keys[i]) for i in range(n)]
+sk = [Palia.keygen(enc_y, keys[i]) for i in range(n)]
+m = Palia.decrypt(cs, tag, pub, sk, y, mk, (0, 2000))
+```
 ##### Export Keys
 
 ```python
@@ -259,6 +292,7 @@ print(f"ct = {[json.dumps(cs[i].export()) for i in range(n)]}")
 print(f"secret_key = {json.dumps(sk.export())}")
 print(f"pub_key = {json.dumps(key.get_public_key().export())}")
 ```
+
 
 ## Customize
 
