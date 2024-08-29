@@ -50,6 +50,9 @@ class _FeDDHMultiClientDec_MK:
         self.exchange_key = [b'' for _ in range(pub.n)]
         self.share = [[] for _ in range(self.pub.n)]
 
+    def regenerate_sk(self):
+        self.sk = [(randbelow(self.pub.F.order()), randbelow(self.pub.F.order())) for _ in range(self.pub.m)]
+
     def get_exc_public_key(self):
         return self.exc_priv_key.public_key()
 
@@ -62,7 +65,7 @@ class _FeDDHMultiClientDec_MK:
 
         self.exchange_key[index] = key_agreement(static_priv=self.exc_priv_key, static_pub=pub_key, kdf=kdf)
 
-    def generate_share(self):
+    def generate_share(self, epoch=0):
         length = self.pub.F.order().bit_length() // 8
         self.share = [[] for _ in range(self.pub.n)]
         for i in range(self.pub.n):
@@ -70,9 +73,9 @@ class _FeDDHMultiClientDec_MK:
                 nonce = long_to_bytes(i * self.pub.m + j)
                 self.share[i].append(
                     (cprf.CPRF.eval(self.pub.n, self.index, self.exchange_key,
-                                    b'a' + nonce, length) % self.pub.F.order(),
+                                    b'a' + long_to_bytes(epoch) + nonce, length) % self.pub.F.order(),
                      cprf.CPRF.eval(self.pub.n, self.index, self.exchange_key,
-                                    b'b' + nonce, length) % self.pub.F.order())
+                                    b'b' + long_to_bytes(epoch) + nonce, length) % self.pub.F.order())
                 )
 
 
